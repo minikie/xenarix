@@ -8,7 +8,7 @@ def get_test_model(process_name):
 
     model = scen.GBMConst(process_name)
 
-    model.sections["X0"] = 100
+    model.x0 = 100
     model.sections["RF"] = 0.03
     model.sections["DIVIDEND"] = 0.01
     model.sections["SIGMA"] = 0.3

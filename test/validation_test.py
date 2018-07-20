@@ -16,11 +16,15 @@ scen1.general.scenario_num = 30
 scen1.general.maxyear = 50
 scen1.general.frequency = 'MONTH'
 
+gbm = test_model.gbm.get_test_model('gbm_test')
+gbmconst = test_model.gbmconst.get_test_model('gbmconst_test')
 hw1f = test_model.hw1f.get_test_model('hw1f_test')
 bk1f = test_model.bk1f.get_test_model('bk1f_test')
 cir1f = test_model.cir1f.get_test_model('cir1f_test')
 vasicek = test_model.vasicek.get_test_model('vasicek_test')
 
+scen1.add_model(gbm)
+scen1.add_model(gbmconst)
 scen1.add_model(hw1f)
 scen1.add_model(bk1f)
 scen1.add_model(cir1f)

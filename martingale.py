@@ -36,7 +36,7 @@ def test_scenario_validation(scen):
         #model.add_debug_calc('EXPECTATION')
         #model.add_calc(xen.UnconditionalExpectation())
         model.add_calc(xen.Expectation())
-        #model.add_calc(xen.Ran())
+        model.add_calc(xen.RandomZ())
 
         # model.add_calc('FITTINGDISCOUNT')
 
