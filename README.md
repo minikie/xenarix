@@ -1,2 +1,3 @@
-# xenarixPy
-xenarix python library
+# XenarixPy
+Xenarix Python Library
+
