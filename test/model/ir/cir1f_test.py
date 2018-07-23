@@ -8,15 +8,10 @@ def get_test_model(process_name):
 
     model = scen.CIR1F(process_name)
 
-    model.sections["R0"] = 0.03
-
-    model.sections["PARA_ALPHA"] = 0.1
-    model.sections["PARA_LONGTERM"] = 0.1
-    model.sections["PARA_SIGMA"] = 0.01
-
-    model.sections["PARA_ALPHA_FIX"] = False
-    model.sections["PARA_LONGTERM_FIX"] = False
-    model.sections["PARA_SIGMA_FIX"] = False
+    model.r0 = 0.03
+    model.alpha = 0.1
+    model.longterm = 0.1
+    model.sigma = 0.01
 
     return model
 

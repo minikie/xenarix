@@ -8,8 +8,12 @@ def get_test_model(process_name):
 
     model = scen.HullWhite1F(process_name)
 
-    model.fitting_curve.tenor = ['3M', '6M', '9M', '12M', '24M', '36M', '48M', '60M', '120M', '180M']
-    model.fitting_curve.value = [0.0164, 0.0161, 0.0159, 0.0164, 0.0173, 0.0182, 0.0191, 0.0218, 0.0229, 0.0229]
+    #model.fitting_curve.tenor = ['3M', '6M', '9M', '12M', '24M', '36M', '48M', '60M', '120M', '180M']
+    #model.fitting_curve.value = [0.0164, 0.0161, 0.0159, 0.0164, 0.0173, 0.0182, 0.0191, 0.0218, 0.0229, 0.0229]
+
+    model.fitting_curve.tenor = ['1D', '3M', '6M', '12M', '24M', '30M']
+    model.fitting_curve.value = [0.0147, 0.01664, 0.01631, 0.01625, 0.01638, 0.01652]
+
     model.alpha_curve.tenor = ['36M']
     model.alpha_curve.value = [0.1]
     model.sigma_curve.tenor = ['12M', '24M', '36M']

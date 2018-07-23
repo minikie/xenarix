@@ -8,17 +8,19 @@ def get_test_model(process_name):
     model = scen.HESTON(process_name)
 
     model.sections["X0"] = 100
-    model.sections["RF_CURVE_TENOR"] = ['3M', '6M', '9M', '12M', '24M', '36M', '48M', '60M', '120M', '180M', '100Y']
-    model.sections["RF_CURVE_VALUE"] = [0.0164, 0.0161, 0.0159, 0.0164, 0.0173, 0.0182, 0.0191, 0.0218, 0.0229, 0.0229, 0.0229]
+    model.rf_curve.tenor = ['3M', '6M', '9M', '12M', '24M', '36M', '48M', '60M', '120M', '180M']
+    model.rf_curve.value = [0.0164, 0.0161, 0.0159, 0.0164, 0.0173, 0.0182, 0.0191, 0.0218, 0.0229, 0.0229]
+    model.div_curve.tenor = ['100Y']
+    model.div_curve.value = [0.005]
 
-    model.sections["DIVIDEND_CURVE_TENOR"] = ['100Y']
-    model.sections["DIVIDEND_CURVE_VALUE"] = [0.005]
+    # parameter from http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.631.9340&rep=rep1&type=pdf
+    # heston paper 1993
+    model.v0 = 0.01
+    model.kapa = 2
+    model.long_variance = 0.01
+    model.volofvol = 0.1
+    model.rho = 0.0
 
-    model.sections["V0"] = 0.3
-    model.sections["KAPA"] = 0.1
-    model.sections["LONG_VARIANCE"] = 0.3
-    model.sections["VOLOFVOL"] = 0.3
-    model.sections["RHO"] = 0.0
     return model
 
 

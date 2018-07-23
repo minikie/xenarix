@@ -8,17 +8,13 @@ def get_test_model(process_name):
 
     model = scen.CIR1FExt(process_name)
 
-    model.sections["FITTING_CURVE_TENOR"] = ['3M', '6M', '9M', '12M', '24M', '36M', '48M', '60M', '120M', '180M', '100Y']
-    model.sections["FITTING_CURVE_VALUE"] = [0.0164, 0.0161, 0.0159, 0.0164, 0.0173, 0.0182, 0.0191, 0.0218, 0.0229, 0.0229, 0.0229]
+    model.fitting_curve.tenor = ['3M', '6M', '9M', '12M', '24M', '36M', '48M', '60M', '120M', '180M']
+    model.fitting_curve.value = [0.0164, 0.0161, 0.0159, 0.0164, 0.0173, 0.0182, 0.0191, 0.0218, 0.0229, 0.0229]
 
-    model.sections["R0"] = 0.03
-    model.sections["PARA_X0_FIX"] = False
-    model.sections["PARA_ALPHA"] = 0.1
-    model.sections["PARA_ALPHA_FIX"] = False
-    model.sections["PARA_SIGMA"] = 0.1
-    model.sections["PARA_SIGMA_FIX"] = False
-    model.sections["PARA_LONGTERM"] = 0.1
-    model.sections["PARA_LONGTERM_FIX"] = False
+    model.r0 = 0.03
+    model.alpha = 0.1
+    model.longterm = 0.04
+    model.sigma = 0.01
 
     return model
 

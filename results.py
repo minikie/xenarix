@@ -67,8 +67,8 @@ def xeResultList(set_name, scen_name, result_name):
 
     result_data_info = build_result_data_info(result_dir + '/' + xen.resultinfo_filename)
     result_arr = dict()
-    for shock_nm, calculation, filepath, calc_type in zip(result_data_info['SHOCK_NAME'], result_data_info['CALCULATION'], result_data_info['FILEPATH'], result_data_info['CALC_TYPE']):
-        result_arr[str(shock_nm) + '_' + str(calculation)] = ResultObj(filepath, calc_type)
+    for model_name, shock_nm, calculation, filepath, calc_type in zip(result_data_info['REF_INDEX_CD'], result_data_info['SHOCK_NAME'], result_data_info['CALCULATION'], result_data_info['FILEPATH'], result_data_info['CALC_TYPE']):
+        result_arr[str(model_name) + '_' + str(shock_nm) + '_' + str(calculation)] = ResultObj(filepath, calc_type)
 
     return result_arr
 
