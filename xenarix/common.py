@@ -1,27 +1,58 @@
 # coding=utf-8
-import numpy as np
-import sqlite3
 import os
-import pandas as pd
 from enum import Enum
 from collections import OrderedDict
-import results
 import json
-import datetime
+import imp
 
-xen_bin_dir = os.environ['XENARIX_BINPATH'].replace(';', '')
-xen_input_dir = xen_bin_dir + "\\scen_input_file"
-xen_input_temp_dir = xen_bin_dir + "\\scen_input_file\\temp"
-xen_result_dir = xen_bin_dir + "\\scen_results"
+#xen_bin_dir = os.environ['XENARIX_BINPATH'].replace(';', '')
+xen_bin_dir = None
 
-xen_cali_input_dir = xen_bin_dir + "\\cali_input_file"
-xen_cali_result_dir = xen_bin_dir + "\\cali_results"
+def get_repository():
+    global xen_bin_dir
+
+    if xen_bin_dir == None:
+        raise Exception('repository is not initialized.')
+
+    if os.path.exists(xen_bin_dir) == False:
+        raise Exception(xen_bin_dir + ' repository does not exist.')
+
+    return xen_bin_dir
+
+def set_repository(dir, is_make_directory=True):
+    global xen_bin_dir
+
+    tf = os.path.exists(dir)
+    if os.path.exists(dir) == False:
+        if is_make_directory:
+            os.makedirs(dir)
+        else:
+            raise Exception(dir + ' folder does not exist.')
+
+    xen_bin_dir = dir
+
+def check_directory(dir):
+    if os.path.exists(dir) == False:
+        os.makedirs(dir)
+    return dir
+
+def xen_input_dir(): return check_directory(get_repository() + "\\scen_input_file")
+def xen_input_temp_dir(): return check_directory(get_repository() + "\\scen_input_file\\temp")
+def xen_result_dir(): return check_directory(get_repository() + "\\scen_results")
+
+def xen_cali_input_dir(): return check_directory(get_repository() + "\\cali_input_file")
+def xen_cali_result_dir(): return check_directory(get_repository() + "\\cali_results")
 
 xen_extension = '.xen'
 cali_extension = '.cali'
 xenset_extension = '.xens'
 
+engine_filename = 'xenarix_engine.exe'
 resultinfo_filename = 'RESULTINFO.TXT'
+
+module_dir = imp.find_module('xenarix')
+engine_path = module_dir[1] + '\\' + engine_filename
+
 
 class Interpolation(Enum):
     BackwardFlat = 'BACKWARDFLAT'

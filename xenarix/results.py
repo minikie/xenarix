@@ -1,13 +1,11 @@
 # coding=utf-8
 import numpy as np
 import pandas as pd
-from pathlib import Path
 import os
-#from xenarix import
 import xenarix as xen
 
 def build_result_data_info2(set_name, scen_name, result_name):
-    result_info_file_path = xen_result_dir + '/' + set_name + '/' + scen_name + '/' + result_name + '/' + resultinfo_filename
+    result_info_file_path = xen.xen_result_dir + '/' + set_name + '/' + scen_name + '/' + result_name + '/' + xen.resultinfo_filename
 
     return build_result_data_info(result_info_file_path)
 

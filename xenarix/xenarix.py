@@ -3,7 +3,6 @@ import numpy as np
 import os
 from collections import OrderedDict
 import datetime
-from common import *
 from calculations import *
 
 
@@ -363,8 +362,8 @@ class YieldCurve:
         d[curve_name + "_CURVE_VALUE"] = self.value
         d[curve_name + "_CURVE_REF"] = 'NULL' if self.ref is None else self.ref
         d[curve_name + "_CURVE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
-        d[curve_name + "_CURVE_INTERPOLATION"] = self.interpolation.name
-        d[curve_name + "_CURVE_EXTRAPOLATION"] = self.extrapolation.name
+        d[curve_name + "_CURVE_INTERPOLATION"] = self.interpolation
+        d[curve_name + "_CURVE_EXTRAPOLATION"] = self.extrapolation
 
         return d
 
@@ -386,7 +385,7 @@ class ParaCurve:
         d['PARA_' + para_name + "_CURVE_VALUE"] = self.value
         d['PARA_' + para_name + "_CURVE_REF"] = 'NULL' if self.ref is None else self.ref
         d['PARA_' + para_name + "_CURVE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
-        d['PARA_' + para_name + "_CURVE_INTERPOLATION"] = self.interpolation.name
+        d['PARA_' + para_name + "_CURVE_INTERPOLATION"] = self.interpolation
 
         return d
 
@@ -411,7 +410,7 @@ class VolSurface:
         d[surface_name + "_SURFACE_MATRIX"] = self.matrix
         d[surface_name + "_SURFACE_REF"] = 'NULL' if self.ref is None else self.ref
         d[surface_name + "_SURFACE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
-        d[surface_name + "_SURFACE_INTERPOLATION"] = self.interpolation.name
+        d[surface_name + "_SURFACE_INTERPOLATION"] = self.interpolation
         d[surface_name + "_SURFACE_EXTRAPOLATION"] = self.extrapolation.name
 
         return d
@@ -1219,23 +1218,21 @@ class Scenario:
     def generate(self, scen_set_nm):
         #scen_set_nm = 'defaultsetname'
 
-        scen_id = self.general.sections['SCENARIO_ID']
-        self.general.sections['SCENARIO_ID'] = scen_id.upper()
-
-        result_id = self.general.sections['RESULT_ID']
-        self.general.sections['RESULT_ID'] = result_id.upper()
+        scen_id = self.general.scenario_id
+        result_id = self.general.result_id
 
         self.check_error()
 
-
         temp_filename = self.save_temp(scen_id)
 
-        exe_nm = 'scenarioGeneratorExe.exe'
+
         # --setname=debug --scenario_file_temp --scenariofilename=lastgen.xen
         arg_str = ['--scenario_file_temp', '--setname={}'.format(scen_set_nm),
                    '--scenariofilename={}'.format(temp_filename)]
 
-        run_command = xen_bin_dir + '\\' + exe_nm + ' ' + ' '.join(arg_str)
+        #run_command = xen_bin_dir + '\\' + exe_nm + ' ' + ' '.join(arg_str)
+        #run_command = '.\\' + exe_nm + ' ' + ' '.join(arg_str)
+        run_command = engine_path + ' ' + ' '.join(arg_str)
         print(run_command)
         res = os.system(run_command)
 
@@ -1245,7 +1242,7 @@ class Scenario:
         self.build()
         timestamp_str = datetime.datetime.today().strftime('%Y%m%d%H%M%S')
         filename = scen_id + '_' + timestamp_str + xen_extension
-        f = open(xen_input_temp_dir + '\\' + filename, 'w')
+        f = open(xen_input_temp_dir() + '\\' + filename, 'w')
         f.write(self.contents)
         f.close()
 
@@ -1357,7 +1354,7 @@ class ScenarioSet:
             contents += scen.contents
             contents += '@'
 
-        f = open(xen_input_dir + '\\' + new_set_name + xenset_extension, 'w')
+        f = open(xen_input_dir() + '\\' + new_set_name + xenset_extension, 'w')
         f.write(contents)
         f.close()
 
@@ -1370,7 +1367,7 @@ def get_scenario(scen_id):
 
 
 def scenario_list():
-    return [scenario.replace(xen_extension, '') for scenario in os.listdir(xen_input_dir)]
+    return [scenario.replace(xen_extension, '') for scenario in os.listdir(xen_input_dir())]
 
 
 def result_list(set_nm, scen_id, filter=''):

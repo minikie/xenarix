@@ -1,5 +1,5 @@
+# coding=utf-8
 from common import *
-
 
 class Calculation(Tag):
     def __init__(self, calc_name):
