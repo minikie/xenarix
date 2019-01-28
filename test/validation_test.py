@@ -1,8 +1,7 @@
 # coding=euc-kr
 import xenarix as scen
-import martingale as mart
+from xenarix import martingale as mart
 import test.model.all_test as test_model
-import results
 
 scen_id = 'testallmodel_1'
 result_id = 'testresult_1'

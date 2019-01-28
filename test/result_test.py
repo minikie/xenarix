@@ -1,4 +1,4 @@
-﻿import results as xen_result
+﻿from xenarix import results as xen_result
 
 set_name = 'debug'
 scen_name = 'TESTSCENTEMPLATEID'

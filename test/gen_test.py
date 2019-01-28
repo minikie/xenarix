@@ -1,7 +1,6 @@
 # coding=euc-kr
 import xenarix as scen
-import martingale as mart
-import results
+from xenarix import martingale as mart
 
 scen_id = 'testallmodel_1'
 result_id = 'testresult_1'

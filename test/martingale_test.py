@@ -1,4 +1,4 @@
-import results as xen_result
+from xenarix import results as xen_result
 import matplotlib.pyplot as plt
 import numpy as np
 
