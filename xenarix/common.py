@@ -50,8 +50,8 @@ xenset_extension = '.xens'
 engine_filename = 'xenarix_engine.exe'
 resultinfo_filename = 'RESULTINFO.TXT'
 
-module_dir = imp.find_module('xenarix')
-engine_path = module_dir[1] + '\\' + engine_filename
+module_dir_info = imp.find_module('xenarix')
+engine_path = module_dir_info[1] + '\\' + engine_filename
 
 
 class Interpolation(Enum):

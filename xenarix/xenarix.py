@@ -1227,7 +1227,9 @@ class Scenario:
 
 
         # --setname=debug --scenario_file_temp --scenariofilename=lastgen.xen
-        arg_str = ['--scenario_file_temp', '--setname={}'.format(scen_set_nm),
+        arg_str = ['--scenario_file_repo',
+                   '--repo_dir={}'.format(get_repository()),
+                   '--setname={}'.format(scen_set_nm),
                    '--scenariofilename={}'.format(temp_filename)]
 
         #run_command = xen_bin_dir + '\\' + exe_nm + ' ' + ' '.join(arg_str)
@@ -1370,15 +1372,18 @@ def scenario_list():
     return [scenario.replace(xen_extension, '') for scenario in os.listdir(xen_input_dir())]
 
 
-def result_list(set_nm, scen_id, filter=''):
-    result_id_list = []
-    items = os.listdir(xen_result_dir + "\\" + set_nm + "\\" + scen_id)
+# def result_list(set_nm, scen_id, filter=''):
+#     result_id_list = []
+#     items = os.listdir(xen_result_dir() + "\\" + set_nm + "\\" + scen_id)
+#
+#     for item in items:
+#         if not os.path.isfile(item):
+#             result_id_list.append(item)
+#
+#     return result_id_list
 
-    for item in items:
-        if not os.path.isfile(item):
-            result_id_list.append(item)
 
-    return result_id_list
+
 
 
 if __name__ == "__main__":
