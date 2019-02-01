@@ -12,7 +12,12 @@ def get_repository():
     global xen_bin_dir
 
     if xen_bin_dir == None:
-        raise Exception('repository is not initialized.')
+        xen_bin_dir = os.path.join(os.getcwd(), 'repository')
+        if os.path.exists(xen_bin_dir) == False:
+            os.makedirs(xen_bin_dir)
+            print ('default repository is initialized.')
+
+        #raise Exception('repository is not initialized.')
 
     if os.path.exists(xen_bin_dir) == False:
         raise Exception(xen_bin_dir + ' repository does not exist.')
@@ -49,6 +54,7 @@ xenset_extension = '.xens'
 
 engine_filename = 'xenarix_engine.exe'
 resultinfo_filename = 'RESULTINFO.TXT'
+timegridinfo_filename = 'TIMEGRIDINFO.TXT'
 
 module_dir_info = imp.find_module('xenarix')
 engine_path = module_dir_info[1] + '\\' + engine_filename

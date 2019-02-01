@@ -1,7 +1,7 @@
 # coding=euc-kr
 import xenarix as xen
 
-xen.set_repository('C:\\Users\\09928829\\Source\\Workspaces\\InsuranceHedgeProject\\InsruranceHedge_sln\\Project\\Scenario\\xenarixPy\\test_repository')
+#xen.set_repository('C:\\Users\\09928829\\Source\\Workspaces\\InsuranceHedgeProject\\InsruranceHedge_sln\\Project\\Scenario\\xenarixPy\\test_repository')
 
 scen_id = 'testallmodel_2'
 result_id = 'testresult_1'
