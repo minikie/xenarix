@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 # x = requirements.readlines()
 # requirements .close()
 
-version = '0.1.7'
+version = '0.1.8'
 #'SomePackage>=1.0.4'
 #install_requires = [v.replace("\n", "") for v in x]
 
