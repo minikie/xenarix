@@ -16,13 +16,13 @@ resultID = 'res1'
 scen1 = xen.Scenario(scenID, resultID)
 
 # generation setting (eq.)
-scen1.general.scenario_num = 30
-scen1.general.maxyear = 3
+scen1.general.scenario_num = 1000
+scen1.general.maxyear = 10
 
 # model add
 scen1.add_model(sample.gbm('kospi200'))
 scen1.add_model(sample.gbmconst('kospi'))
-scen1.add_model(sample.hw1f('irskrw'))
+#scen1.add_model(sample.hw1f('irskrw'))
 
 # set identity correlation
 scen1.refresh_corr()
@@ -41,5 +41,5 @@ multipath = result.get_multipath(scen_count=1)
 print (multipath) # pandas table shape(t_count, model_count)
 
 # select using model_count
-modelpath = result.get_modelpath(model_count=2)
+modelpath = result.get_modelpath(model_count=1)
 print (modelpath) # ndarray : shape(scenarioNum, t_count)

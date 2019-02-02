@@ -14,7 +14,7 @@ Functionalty :
 -   Repository Setting
 -   Multi-Thread Generating
 -   TimeGrid Setting
--   Random Number Easy Change
+-   Random Number Change
 -   Moment-Matching Random
 -   Sobol Sequence Integrated
 
@@ -41,7 +41,7 @@ $ pip install xenarix
 
 Sample Generation Script :
 
-```
+```python
 import xenarix as xen
 import xenarix.sample as sample
 import xenarix.results as xen_r
@@ -87,9 +87,6 @@ print (multipath) # pandas table shape(t_count, model_count)
 # select using model_count
 modelpath = result.get_modelpath(model_count=2)
 print (modelpath) # ndarray : shape(scenarioNum, t_count)
-
-
-
 
 ```
 
