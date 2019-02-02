@@ -27,7 +27,7 @@ setup(
     keywords         = ['scenario', 'finance'],
     # python_requires  = '>=2.7',
     package_data     =  {
-        'xenarix': ['xenarix_engine.exe'],
+        'xenarix': ['xenarix_nc_engine.exe'],
     },
     zip_safe=False,
     classifiers      = [
