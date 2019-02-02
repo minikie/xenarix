@@ -1,6 +1,7 @@
 # coding=euc-kr
 import xenarix as scen
 
+
 def get_test_model(process_name):
 
     cali_id = 'cali_gbm'

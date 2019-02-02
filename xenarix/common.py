@@ -52,7 +52,7 @@ xen_extension = '.xen'
 cali_extension = '.cali'
 xenset_extension = '.xens'
 
-engine_filename = 'xenarix_nc_engine.exe'
+engine_filename = 'xenarix_engine.exe'
 resultinfo_filename = 'RESULTINFO.TXT'
 timegridinfo_filename = 'TIMEGRIDINFO.TXT'
 

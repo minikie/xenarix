@@ -39,18 +39,18 @@ def build_timegrid_info(timegrid_info_file_path):
 
 
 # file timegrid
-class TimeGrid:
-    def __init__(self, set_name, scen_name, result_name):
-        self.set_name = set_name
-        self.scen_name = scen_name
-        self.result_name = result_name
-        self.initialize()
-
-    def __iter__(self):
-        return self.data.itertuples(index=False)
-
-    def initialize(self):
-        self.data = build_timegrid_info2(self.set_name, self.scen_name, self.result_name)
+# class TimeGrid:
+#     def __init__(self, set_name, scen_name, result_name):
+#         self.set_name = set_name
+#         self.scen_name = scen_name
+#         self.result_name = result_name
+#         self.initialize()
+#
+#     def __iter__(self):
+#         return self.data.itertuples(index=False)
+#
+#     def initialize(self):
+#         self.data = build_timegrid_info2(self.set_name, self.scen_name, self.result_name)
 
 
 # file load numpy wrapping
@@ -107,7 +107,6 @@ class ResultObj:
     # def summary(self):
     #     return ''
 
-
     def initialize(self):
         self.result_data_info = build_result_data_info2(self.set_name, self.scen_name, self.result_name)
 
@@ -119,8 +118,9 @@ class ResultObj:
             self.models.append(rm)
             self.names.append(rm.name)
 
-            # timegrid
-        self.timegrid = TimeGrid(self.set_name, self.scen_name, self.result_name)
+        # timegrid
+        self.timegrid = build_timegrid_info2(self.set_name, self.scen_name, self.result_name)
+        # self.timegrid = TimeGrid(self.set_name, self.scen_name, self.result_name)
 
     # scen_count = 0 to scen_num - 1
     def get_multipath(self, scen_count, type='namedtuple'):

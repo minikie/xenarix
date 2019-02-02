@@ -1155,6 +1155,8 @@ class Scenario:
                 self.correlation.load_tag(model_tag)
 
     def add_model(self, model):
+        if model.model_name in self.models:
+            raise Exception('duplicated model_name : ' + model.model_name)
         self.models[model.model_name] = model
 
     def refresh_corr(self):
