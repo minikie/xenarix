@@ -411,7 +411,7 @@ class VolSurface:
         d[surface_name + "_SURFACE_REF"] = 'NULL' if self.ref is None else self.ref
         d[surface_name + "_SURFACE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
         d[surface_name + "_SURFACE_INTERPOLATION"] = self.interpolation
-        d[surface_name + "_SURFACE_EXTRAPOLATION"] = self.extrapolation.name
+        d[surface_name + "_SURFACE_EXTRAPOLATION"] = self.extrapolation
 
         return d
 
@@ -952,11 +952,11 @@ def get_calibrationtool(tag):
 
 
 # global method
-def get_calibrator(cali_id):
-    cali = Calibrator()
-    cali.load(cali_id)
-
-    return scen
+# def get_calibrator(cali_id):
+#     cali = Calibrator()
+#     cali.load(cali_id)
+#
+#     return scen
 
 
 class Calibrator:
@@ -1383,17 +1383,20 @@ def scenario_list():
 #     return result_id_list
 
 
+def test_generate(scenSetID, scenID, resultID):
 
+    maturity_tenors = ['5Y']
 
+    scen_set = ScenarioSet(scenSetID)
+    scen = Scenario(scenID, resultID)
 
-if __name__ == "__main__":
-    _scen_id = "testscenid1"
-    scen = Scenario()
-    scen.load(_scen_id)
-    _new_scen_id = 'testnewid'
-    _result_id = 'testresultid'
+    usd_curve = YieldCurve(None)
+    usd_curve.tenor = maturity_tenors
+    usd_curve.value = [ 0.02 ]
 
-    scen.generate(_new_scen_id, _result_id)
+    krw_curve = YieldCurve(None)
+    krw_curve.tenor = maturity_tenors
+    krw_curve.value = [ 0.015 ]
 
     model1 = GBM("kospi200_1")
     model1.curve_tenor = ['1Y', '2Y', '3Y']
@@ -1428,11 +1431,10 @@ if __name__ == "__main__":
     model4.para_sigma_value = [0.01]
 
     scen.add_model(model4)
+    scen.refresh_corr()
+    scen_set.add_scenario(scen)
 
-    # scen.generate()
-
-    # using
-
+    scen_set.generate()
 
 
 

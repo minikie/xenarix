@@ -43,7 +43,7 @@ Sample Generation Script :
 
 ```
 import xenarix as xen
-import xenarix.result as xen_r
+import xenarix.results as xen_r
 
 # default repository is sub-directory of your_working_directory
 # ( [your_working_directory]/repository ) 

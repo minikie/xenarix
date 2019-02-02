@@ -1,6 +1,6 @@
 # coding=euc-kr
 
-from test import test as bk1f_test, test as cir1f_test, test as cir1fext_test, test as hw1f_test, test as vasicek_test, \
+from test import bk1f_test, test as cir1f_test, test as cir1fext_test, test as hw1f_test, test as vasicek_test, \
     test as gbm_test, test as gbmconst_test
 
 # import gbmlocalvol_test
