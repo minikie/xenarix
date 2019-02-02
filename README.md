@@ -41,7 +41,7 @@ $ pip install xenarix
 
 Sample Generation Script :
 
-```
+```python
 import xenarix as xen
 import xenarix.sample as sample
 import xenarix.results as xen_r
