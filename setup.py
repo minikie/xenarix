@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 # x = requirements.readlines()
 # requirements .close()
 
-version = '0.1.11'
+version = '0.1.12'
 #'SomePackage>=1.0.4'
 #install_requires = [v.replace("\n", "") for v in x]
 
@@ -17,11 +17,10 @@ setup(
     name             = 'xenarix',
     version          = version,
     description      = 'python library for xenarix',
-    license          ='MIT',
+    license          ='Montrix Non-Commercial License',
     author           = 'montrix',
     author_email     = 'master@montrix.co.kr',
-    url              = 'http://www.montrix.co.kr/mxdex',
-    download_url     = 'http://www.montrix.co.kr/mxdex/download/xenarix_' + version + '.tar.gz',
+    url              = 'http://www.montrix.co.kr/xenarix',
     install_requires = install_requires,
     packages         = find_packages(exclude = ['test']),
     keywords         = ['scenario', 'finance'],
