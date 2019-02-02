@@ -295,6 +295,9 @@ class ProcessModel(Tag):
         if debug_calc_nm not in self.sections['CALCULATION']:
             self.sections['CALCULATION'].append(debug_calc_nm)
 
+    def clear_clac(self):
+        self.sections['CALCULATION'] = ['VALUE']
+
 
 class UnknownModel(ProcessModel):
     def __init__(self, model_name, model_type):
@@ -1383,6 +1386,10 @@ def scenario_list():
 #             result_id_list.append(item)
 #
 #     return result_id_list
+
+
+def test_martingale():
+    pass
 
 
 def test_generate(scenSetID, scenID, resultID):
