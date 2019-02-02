@@ -26,7 +26,7 @@ setup(
     packages         = find_packages(exclude = ['test']),
     keywords         = ['scenario', 'finance'],
     # python_requires  = '>=2.7',
-    package_data     =  {
+    package_data     = {
         'xenarix': ['xenarix_engine.exe'],
     },
     zip_safe=False,

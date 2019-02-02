@@ -1,10 +1,10 @@
-Xenarix : Economic Scenario Generator (Python)
+Xenarix(Beta) : Economic Scenario Generator
 ==========================
 
 ![image](https://img.shields.io/badge/Platform-Windows-Green.svg)
 ![image](https://img.shields.io/pypi/pyversions/requests.svg)
 
-
+Xenarix is a economic scenario generator(ESG) for financial analysis. Now is Beta Release version and Support only for Windows.
 
 Feature Support
 ---------------
@@ -101,4 +101,4 @@ This is licensed under the terms of the Montrix Non-Commercial License(see the f
 
 Please contact us for the commercial purpose.
 
-If you're interested in other finacial application, visit [Montrix](http://www.montrix.co.kr)
+If you're interested in other financial application, visit [Montrix](http://www.montrix.co.kr)
