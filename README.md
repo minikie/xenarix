@@ -1,8 +1,8 @@
 Xenarix : Economic Scenario Generator (Python)
 ==========================
 
-[![image](https://img.shields.io/badge/Platform-Windows-Green.svg)](https://pypi.org/project/requests/)
-[![image](https://img.shields.io/pypi/pyversions/requests.svg)](https://pypi.org/project/requests/)
+![image](https://img.shields.io/badge/Platform-Windows-Green.svg)
+![image](https://img.shields.io/pypi/pyversions/requests.svg)
 
 
 
@@ -74,7 +74,3 @@ This is licensed under the terms of the Montrix Non-Commercial License(see the f
 Please contact us for the commercial purpose.
 
 If you're interested in other finacial application, visit [Montrix](http://www.montrix.co.kr)
-
-About
-------
-This is a [QunatLib](https://www.quantlib.org) based Software.  

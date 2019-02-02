@@ -1227,10 +1227,10 @@ class Scenario:
 
 
         # --setname=debug --scenario_file_temp --scenariofilename=lastgen.xen
-        arg_str = ['--scenario_file_repo',
-                   '--repo_dir={}'.format(get_repository()),
+        arg_str = ['--gen',
+                   '--repo={}'.format(get_repository()),
                    '--setname={}'.format(scen_set_nm),
-                   '--scenariofilename={}'.format(temp_filename)]
+                   '--file={}'.format(temp_filename)]
 
         #run_command = xen_bin_dir + '\\' + exe_nm + ' ' + ' '.join(arg_str)
         #run_command = '.\\' + exe_nm + ' ' + ' '.join(arg_str)
@@ -1392,17 +1392,18 @@ def test_generate(scenSetID, scenID, resultID):
 
     usd_curve = YieldCurve(None)
     usd_curve.tenor = maturity_tenors
-    usd_curve.value = [ 0.02 ]
+    usd_curve.value = [0.02]
 
     krw_curve = YieldCurve(None)
     krw_curve.tenor = maturity_tenors
-    krw_curve.value = [ 0.015 ]
+    krw_curve.value = [0.015]
 
     model1 = GBM("kospi200_1")
-    model1.curve_tenor = ['1Y', '2Y', '3Y']
-    model1.rf_value = [0.03, 0.03, 0.03]
-    model1.div_value = [0.01, 0.01, 0.01]
-    model1.sigma_value = [0.3, 0.3, 0.3]
+    model1.rf_curve = krw_curve
+    model1.div_curve.tenor = maturity_tenors
+    model1.div_curve.value = [0.005]
+    model1.sigma_curve.tenor = maturity_tenors
+    model1.sigma_curve.value = [0.3]
 
     scen.add_model(model1)
 
@@ -1413,24 +1414,16 @@ def test_generate(scenSetID, scenID, resultID):
 
     scen.add_model(model2)
 
-    model3 = GBMLocalVol("kospi200_3")
-    model3.curve_tenor = ['1Y', '2Y', '3Y']
-    model3.rf_value = [0.03, 0.03, 0.03]
-    model3.div_value = [0.01, 0.01, 0.01]
-
-    model3.sigma_surface_moneyness = [0.1, 0.2, 0.3]
-    model3.sigma_surface_value = [0.01, 0.01, 0.01]
-
-    scen.add_model(model3)
-
     model4 = HullWhite1F("krwcd_1")
-    model4.fitting_curve_tenor = ['1Y', '2Y', '3Y']
-    model4.fitting_curve_value = [0.03, 0.03, 0.03]
-    model4.para_tenor = ['100Y']
-    model4.para_alpha_value = [0.1]
-    model4.para_sigma_value = [0.01]
+    model4.fitting_curve = krw_curve
+    model4.alpha_curve.tenor = ['100Y']
+    model4.alpha_curve.value = [0.1]
+
+    model4.sigma_curve.tenor = ['100Y']
+    model4.sigma_curve.value = [0.01]
 
     scen.add_model(model4)
+
     scen.refresh_corr()
     scen_set.add_scenario(scen)
 
