@@ -16,7 +16,7 @@ resultID = 'res1'
 scen1 = xen.Scenario(scenID, resultID)
 
 # generation setting (eq.)
-scen1.general.scenario_num = 1000
+scen1.general.scenario_num = 100
 scen1.general.maxyear = 10
 
 # model add

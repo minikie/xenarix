@@ -1,6 +1,7 @@
 # coding=utf-8
 from common import *
 
+
 class Calculation(Tag):
     def __init__(self, calc_name):
         Tag.__init__(self, 'CALCULATION')
@@ -112,6 +113,14 @@ class FittingDiscount(Calculation):
         self.sections['CALC_TYPE'] = 'FITTINGDISCOUNT'
 
 
+class ModelDiscount(Calculation):
+    def __init__(self):
+        Calculation.__init__(self, 'MODEL_DISCOUNTBOND')
+
+        self.sections['MODEL_CATEGORY'] = 'TERMSTRUCTUREFITTINGMODEL'
+        self.sections['CALC_TYPE'] = 'MODEL_DISCOUNTBOND'
+
+
 class Rate(Calculation):
     def __init__(self, calc_name):
         Calculation.__init__(self, calc_name)
@@ -155,6 +164,9 @@ class Discount(Rate):
         self.sections['MATURITY'] = '10Y'
 
         self.set_sections(**kwargs)
+
+
+
 
 
 class Bond(Calculation):

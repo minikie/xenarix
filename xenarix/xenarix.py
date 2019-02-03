@@ -17,12 +17,16 @@ class General(Tag):
         self.maxyear = 30
         self.n_peryear = 52
         self.rnd_type = "SOBOL"
+        self.rnd_subtype = "SOBOL"
         self.rnd_seed = 1
-        self.frequency = "DAY"
+        self.rnd_skip = 0
+        self.moment_match = False
+        self.frequency = TimeGridFrequency.Day
         self.frequency_month = 1
         self.frequency_day = 1
         self.result_id = "TESTRESULTID1"
         self.base_currency = "USD"
+        self.thread_num = 1
 
     def pre_build(self):
         d = OrderedDict()
@@ -34,14 +38,20 @@ class General(Tag):
         self.sections["MAXYEAR"] = self.maxyear
         self.sections["N_PERYEAR"] = self.n_peryear
         self.sections["RND_TYPE"] = self.rnd_type
+        self.sections["RND_SUBTYPE"] = self.rnd_subtype
         self.sections["RND_SEED"] = self.rnd_seed
+        self.sections["RND_SKIP"] = self.rnd_skip
+        self.sections["MOMENTMATCH"] = self.moment_match
         self.sections["FREQUENCY"] = self.frequency
         self.sections["FREQUENCY_MONTH"] = self.frequency_month
         self.sections["FREQUENCY_DAY"] = self.frequency_day
         self.sections["RESULT_ID"] = self.result_id
         self.sections["BASE_CURRENCY"] = self.base_currency
+        self.sections["THREADNUM"] = self.thread_num
+
 
         return d
+
 
 class CalibrationGeneral(Tag):
     def __init__(self):
@@ -290,12 +300,14 @@ class ProcessModel(Tag):
 
         if calc_name not in self.sections['CALCULATION']:
             self.sections['CALCULATION'].append(calc_name)
+        else:
+            raise Exception('duplicated calculation')
 
     def add_debug_calc(self, debug_calc_nm):
         if debug_calc_nm not in self.sections['CALCULATION']:
             self.sections['CALCULATION'].append(debug_calc_nm)
 
-    def clear_clac(self):
+    def clear_calc(self):
         self.sections['CALCULATION'] = ['VALUE']
 
 

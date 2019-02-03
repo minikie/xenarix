@@ -83,6 +83,27 @@ class Extrapolation(Enum):
     FLAT = 'FLAT'
 
 
+class TimeGridFrequency(Enum):
+    Day = 'DAY'
+    Month = 'MONTH'
+    Quarter = 'QUARTER'
+    SemiAnnual = 'SEMIANNUAL'
+    Annual = 'ANNUAL'
+    FirstOfMonth = 'FIRSTOFMONTH'
+    FirstOfQuarter = 'FIRSTOFQUARTER'
+    FirstOfSemiannual = 'FIRSTOFSEMIANNUAL'
+    FirstOfAnnual = 'FIRSTOFANNUAL'
+    EndOfMonth = 'ENDOFMONTH'
+    EndOfQuarter = 'ENDOFQUARTER'
+    EndOfSemiannual = 'ENDOFSEMIANNUAL'
+    EndOfAnnual = 'ENDOFANNUAL'
+
+
+class RndType(Enum):
+    Crude = 'CRUDE'
+    Sobol = 'SOBOL'
+
+
 class KeyValue:
     def __init__(self, line):
         s = line.split('=')

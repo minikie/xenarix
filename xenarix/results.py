@@ -54,7 +54,7 @@ def build_timegrid_info(timegrid_info_file_path):
 
 
 # file load numpy wrapping
-class ReulstModel:
+class ResultModel:
     def __init__(self, result_data_info_row):
         # REF_DT
         # RESULT_ID
@@ -83,12 +83,16 @@ class ReulstModel:
         self.filepath = result_data_info_row['FILEPATH']
         self.scenario_num = result_data_info_row['SCENARIO_NUM']
         self.t_count = result_data_info_row['T_COUNT']
-        self.calc_type = result_data_info_row['CALCULATION']
+        self.calc_name = result_data_info_row['CALCULATION']
+        self.calc_type = result_data_info_row['CALC_TYPE']
 
         self.info = result_data_info_row
         if self.calc_type == 'DEBUGPRINT':
-            scenario_num = 1
+            self.scenario_num = 1
         self.data = np.memmap(self.filepath, np.double, mode='r', shape=(self.scenario_num, self.t_count))
+
+    def average(self):
+        return np.average(self.data, axis=0)
 
 
 class ResultObj:
@@ -96,10 +100,10 @@ class ResultObj:
         self.set_name = set_name
         self.scen_name = scen_name
         self.result_name = result_name
-        self.names = None
+        # self.process_names = None
         self.scenario_num = 0
         self.t_count = 0
-        self.models = []
+        self.models = {}
         self.timegrid = None
         self.result_data_info = None
         self.initialize()
@@ -111,12 +115,13 @@ class ResultObj:
         self.result_data_info = build_result_data_info2(self.set_name, self.scen_name, self.result_name)
 
         # models
-        self.names = []
+        # self.names = []
         for index, row in self.result_data_info.iterrows():
             # if debug 가 아니면 넣기...?
-            rm = ReulstModel(row)
-            self.models.append(rm)
-            self.names.append(rm.name)
+            rm = ResultModel(row)
+            key = str(row['REF_INDEX_CD']) + '_' + str(row['CALCULATION']) + '_' + str(row['SHOCK_NAME'])
+            self.models[str.upper(key)] = rm
+            # self.names.append(rm.name)
 
         # timegrid
         self.timegrid = build_timegrid_info2(self.set_name, self.scen_name, self.result_name)
@@ -126,20 +131,37 @@ class ResultObj:
     def get_multipath(self, scen_count, type='namedtuple'):
         if type == 'namedtuple':
             data = {}
-            for m in self.models:
+            for m in self.models.values():
                 data[m.name] = m.data[scen_count]
             return pd.DataFrame.from_dict(data)
         else:
             res = []
 
-            for m in self.models:
+            for m in self.models.values():
                 res.append(m.data[scen_count])
 
             return np.array(res)
 
     # model_count = 0 to model_num - 1
     def get_modelpath(self, model_count=0):
-        return self.models[model_count].data
+        return self.models.values()[model_count].data
+
+    # find ResultModel using key
+    def get_resultModel(self, model, calc=None, shock='BASE'):
+        if isinstance(model, xen.ProcessModel):
+            model_name = model.model_name
+        else:
+            model_name = model
+
+        if isinstance(calc, xen.Calculation):
+            calc_name = calc.calc_name
+        elif isinstance(calc, str):
+            calc_name = calc
+        else:
+            calc_name = 'nan'
+
+        key = str.upper(model_name + '_' + calc_name + '_' + shock)
+        return self.models[key]
 
     def load(self, start_pos=None, end_pos=None):
         if start_pos is None:
@@ -177,7 +199,7 @@ def resultModel_list(set_name, scen_name, result_name):
     # for model_name, shock_nm, calculation, filepath, calc_type in zip(result_data_info['REF_INDEX_CD'], result_data_info['SHOCK_NAME'], result_data_info['CALCULATION'], result_data_info['FILEPATH'], result_data_info['CALC_TYPE']):
     #     result_arr[str(model_name) + '_' + str(shock_nm) + '_' + str(calculation)] = ResultObj(filepath, calc_type)
     for index, row in result_data_info.iterrows():
-        result_arr[str(row['REF_INDEX_CD']) + '_' + str(row['SHOCK_NAME']) + '_' + str(row['CALCULATION'])] = ReulstModel(row)
+        result_arr[str(row['REF_INDEX_CD']) + '_' + str(row['SHOCK_NAME']) + '_' + str(row['CALCULATION'])] = ResultModel(row)
 
     return result_arr
 
