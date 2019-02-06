@@ -8,6 +8,7 @@ import imp
 #xen_bin_dir = os.environ['XENARIX_BINPATH'].replace(';', '')
 xen_bin_dir = None
 
+
 def get_repository():
     global xen_bin_dir
 
@@ -24,6 +25,7 @@ def get_repository():
 
     return xen_bin_dir
 
+
 def set_repository(dir, is_make_directory=True):
     global xen_bin_dir
 
@@ -36,10 +38,12 @@ def set_repository(dir, is_make_directory=True):
 
     xen_bin_dir = dir
 
+
 def check_directory(dir):
     if os.path.exists(dir) == False:
         os.makedirs(dir)
     return dir
+
 
 def xen_input_dir(): return check_directory(get_repository() + "\\scen_input_file")
 def xen_input_temp_dir(): return check_directory(get_repository() + "\\scen_input_file\\temp")
@@ -47,6 +51,7 @@ def xen_result_dir(): return check_directory(get_repository() + "\\scen_results"
 
 def xen_cali_input_dir(): return check_directory(get_repository() + "\\cali_input_file")
 def xen_cali_result_dir(): return check_directory(get_repository() + "\\cali_results")
+
 
 xen_extension = '.xen'
 cali_extension = '.cali'
