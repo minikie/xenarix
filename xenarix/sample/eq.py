@@ -24,9 +24,9 @@ def gbmconst(process_name):
     model = xen.GBMConst(process_name)
 
     model.x0 = 100
-    model.sections["RF"] = 0.03
-    model.sections["DIVIDEND"] = 0.01
-    model.sections["SIGMA"] = 0.3
+    model.rf = 0.03
+    model.div = 0.01
+    model.sigma = 0.3
 
     return model
 

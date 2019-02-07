@@ -21,7 +21,7 @@ class General(Tag):
         self.rnd_seed = 1
         self.rnd_skip = 0
         self.moment_match = False
-        self.frequency = TimeGridFrequency.Day
+        self.frequency = TimeGridFrequency.Day.value
         self.frequency_month = 1
         self.frequency_day = 1
         self.result_id = "TESTRESULTID1"
@@ -367,8 +367,8 @@ class YieldCurve:
         self.value = []
         self.ref = None
         self.ref_using = False
-        self.interpolation = Interpolation.Linear
-        self.extrapolation = Extrapolation.FLAT
+        self.interpolation = Interpolation.Linear.value
+        self.extrapolation = Extrapolation.FLAT.value
 
     def get_sections(self, curve_name):
         d = OrderedDict()
@@ -390,8 +390,8 @@ class ParaCurve:
         self.value = []
         self.ref = None
         self.ref_using = False
-        self.interpolation = Interpolation.Linear
-        self.extrapolation = Extrapolation.FLAT
+        self.interpolation = Interpolation.Linear.value
+        self.extrapolation = Extrapolation.FLAT.value
 
     def get_sections(self, para_name):
         d = OrderedDict()
@@ -414,8 +414,8 @@ class VolSurface:
 
         self.ref = None
         self.ref_using = False
-        self.interpolation = Interpolation.Linear
-        self.extrapolation = Extrapolation.FLAT
+        self.interpolation = Interpolation.Linear.value
+        self.extrapolation = Extrapolation.FLAT.value
 
     def get_sections(self, surface_name):
         d = OrderedDict()

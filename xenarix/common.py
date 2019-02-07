@@ -8,6 +8,14 @@ import imp
 #xen_bin_dir = os.environ['XENARIX_BINPATH'].replace(';', '')
 xen_bin_dir = None
 
+error_bound = 1.0e-10
+
+def is_equal(x, y):
+    if x-y < error_bound:
+        return True
+    else:
+        return  False
+
 
 def get_repository():
     global xen_bin_dir

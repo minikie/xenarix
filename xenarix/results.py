@@ -2,7 +2,11 @@
 import numpy as np
 import pandas as pd
 import os
+import datetime
 import xenarix as xen
+from collections import namedtuple
+
+T_Row = namedtuple('T_Row', 'INDEX DATE T DT INTERPOLATED')
 
 def build_result_data_info2(set_name, scen_name, result_name):
     result_info_file_path = xen.xen_result_dir() + '/' + set_name + '/' + scen_name + '/' + result_name
@@ -39,18 +43,130 @@ def build_timegrid_info(timegrid_info_file_path):
 
 
 # file timegrid
-# class TimeGrid:
-#     def __init__(self, set_name, scen_name, result_name):
-#         self.set_name = set_name
-#         self.scen_name = scen_name
-#         self.result_name = result_name
-#         self.initialize()
-#
-#     def __iter__(self):
-#         return self.data.itertuples(index=False)
-#
-#     def initialize(self):
-#         self.data = build_timegrid_info2(self.set_name, self.scen_name, self.result_name)
+class TimeGrid:
+    def __init__(self, set_name, scen_name, result_name):
+        self.set_name = set_name
+        self.scen_name = scen_name
+        self.result_name = result_name
+        self.initialize()
+
+    def __iter__(self):
+        return self.data.itertuples(index=False)
+
+    def initialize(self):
+        self.data = build_timegrid_info2(self.set_name, self.scen_name, self.result_name)
+
+    ###
+    # return T_Row
+    def find_closest_row_by_date(self, d):
+        _d = d
+        if isinstance(d, datetime.datetime):
+            d = d.strftime("%Y-%m-%d")
+
+        rows = self.data['DATE']
+
+        pos = 0
+        for r in rows:
+            if _d <= r:
+                break
+            pos += 1
+
+        # selecte before row
+        pos -= 1
+
+        return T_Row(pos, self.data.loc[pos]['DATE'], self.data.loc[pos]['T'], self.data.loc[pos]['DT'], False)
+
+    # return T_Row
+    def find_closest_row_by_t(self, t, interpolation=False):
+        def interpolate(before_row, t):
+            before_date = before_row['DATE']
+            before_t = before_row['T']
+            before_datetime = datetime.datetime.strptime(before_date, '%Y-%m-%d')
+
+            dt = t - before_t
+            date = before_datetime + datetime.timedelta(days=int(dt * 365))
+
+            return T_Row(before_row['INDEX'], date.strftime("%Y-%m-%d"), t, dt, True)
+
+        _t = t
+
+        rows = self.data['T']
+
+        pos = 0
+        for r in rows:
+            if _t <= r:
+                break
+            pos += 1
+
+        # selecte before row
+        pos -= 1
+
+        if interpolation:
+            return interpolate(self.data.loc[pos], _t)
+        else:
+            return T_Row(pos, self.data.loc[pos]['DATE'], self.data.loc[pos]['T'], self.data.loc[pos]['DT'], False)
+
+    def has_date(self, d):
+        return (self.data['DATE'] == d).any()
+
+    def has_t(self, t, error=xen.error_bound):
+        return (self.data['T'].between(t - error, t + error)).any()
+
+    def find_row_by_date(self, d, interpolation=False):
+        def interpolate(before_t_row, d):
+            before_date = before_t_row.DATE
+            before_t = before_t_row.T
+
+            before_datetime = datetime.datetime.strptime(before_date, '%Y-%m-%d')
+            d_datetime = datetime.datetime.strptime(d, '%Y-%m-%d')
+            days = (d_datetime - before_datetime).days
+            t = before_t + float(days)/365
+            dt = t - before_t
+
+            return T_Row(before_t_row.INDEX, d, t, dt, True)
+
+        rows = self.data[self.data['DATE'] == d]
+
+        if rows.empty:
+            if interpolation:
+                t_row = self.find_closest_row_by_date(d)
+                return interpolate(t_row, d)
+            else:
+                return None
+        else:
+            row = rows.iloc[0]
+            pos = row['INDEX']
+            return T_Row(pos, row['DATE'], row['T'], row['DT'], False)
+
+    def find_row_by_t(self, t, interpolation=False, error=xen.error_bound):
+        def interpolate(before_t_row, t):
+            before_date = before_t_row.DATE
+            before_t = before_t_row.T
+            before_datetime = datetime.datetime.strptime(before_date, '%Y-%m-%d')
+
+            dt = t - before_t
+            date = before_datetime + datetime.timedelta(days=int(dt * 365))
+
+            return T_Row(before_t_row.INDEX, date.strftime("%Y-%m-%d"), t, dt, True)
+
+        rows = self.data[self.data['T'].between(t - error, t + error)]
+
+        if rows.empty:
+            if interpolation:
+                t_row = self.find_closest_row_by_t(t)
+                return interpolate(t_row, t)
+            else:
+                return None
+        else:
+            row = rows.iloc[0]
+            pos = row['INDEX']
+            return T_Row(pos, row['DATE'], row['T'], row['DT'], False)
+
+    def pre_t_row(self, t_row):
+        return self.data.iloc[0]
+
+    def next_t_row(self, t_row):
+        pass
 
 
 # file load numpy wrapping
@@ -94,6 +210,19 @@ class ResultModel:
     def average(self):
         return np.average(self.data, axis=0)
 
+    # return shape : (scenario_num, t_count)
+    def interpolated_values(self, t_row):
+        if isinstance(t_row, T_Row):
+            v = self.data[t_row['INDEX']]
+            v_next = self.data[t_row['INDEX']+1]
+
+            t = t_row
+
+            return
+
+
+
+
 
 class ResultObj:
     def __init__(self, set_name, scen_name, result_name):
@@ -124,8 +253,8 @@ class ResultObj:
             # self.names.append(rm.name)
 
         # timegrid
-        self.timegrid = build_timegrid_info2(self.set_name, self.scen_name, self.result_name)
-        # self.timegrid = TimeGrid(self.set_name, self.scen_name, self.result_name)
+        # self.timegrid = build_timegrid_info2(self.set_name, self.scen_name, self.result_name)
+        self.timegrid = TimeGrid(self.set_name, self.scen_name, self.result_name)
 
     # scen_count = 0 to scen_num - 1
     def get_multipath(self, scen_count, type='namedtuple'):

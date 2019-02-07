@@ -1,6 +1,9 @@
+# coding=utf-8
 import xenarix as xen
 import xenarix.test as xen_t
 import xenarix.sample as xen_s
+
+xen.set_repository('c:\\xenarix')
 
 hw1f = xen_s.hw1f('test_hw1')
 

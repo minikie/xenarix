@@ -1,3 +1,4 @@
+# coding=utf-8
 import xenarix as xen
 import xenarix.results as xen_r
 import xenarix.calculations as xen_c
@@ -9,8 +10,8 @@ def shortrate(model, scenario_num=1000, maxyear=3, moment_match=False, frequency
         raise Exception('Ir1FModel Type is needed')
 
     scenSetID = 'test_set'
-    scenID = 'shortrate_test_scen'
-    resultID = 'shortrate_test_result'
+    scenID = 'test_scen'
+    resultID = 'test_result'
 
     scenSet = xen.ScenarioSet(scenSetID)
     scen = xen.Scenario(scenID, resultID)
@@ -18,7 +19,7 @@ def shortrate(model, scenario_num=1000, maxyear=3, moment_match=False, frequency
     scen.general.maxyear = maxyear
     scen.general.scenario_num = scenario_num
     scen.general.moment_match = moment_match
-    scen.general.frequency = frequency
+    scen.general.frequency = frequency.value
 
     # setting additional calculation for martinagle test
     model.clear_calc()
@@ -80,15 +81,15 @@ def shortrate(model, scenario_num=1000, maxyear=3, moment_match=False, frequency
     # plt.plot(shortrate_aver)
     # plt.plot(shortrate_uncon_expectation[0])
     plt.figure(1)
-    plt.plot(res.timegrid['T'], shortrate.average(), label='shor_aver')
-    plt.plot(res.timegrid['T'], shortrate_uncon_expectation.data[0], label='short_analytic')
+    plt.plot(res.timegrid.data['T'], shortrate.average(), label='shor_aver')
+    plt.plot(res.timegrid.data['T'], shortrate_uncon_expectation.data[0], label='short_analytic')
     plt.title('short_aver vs short_analytic')
     plt.xlabel('time (year)')
     plt.ylabel('rate (%)')
     plt.legend()
 
     plt.figure(2)
-    plt.plot(res.timegrid['T'], shortrate.average() - shortrate_uncon_expectation.data[0], label='diff')
+    plt.plot(res.timegrid.data['T'], shortrate.average() - shortrate_uncon_expectation.data[0], label='diff')
     plt.title('short_aver - short_analytic')
     plt.xlabel('time (year)')
     plt.ylabel('rate (%)')
@@ -124,7 +125,8 @@ def shortrate(model, scenario_num=1000, maxyear=3, moment_match=False, frequency
     # alpha vs short rate aver
     # market disc vs disc aver
 
-
+# max diff position : 15 ( 1.73 Y )
+# max diff value : 0.8 ( 0.1 % )
 def equity(model, scenario_num=1000, maxyear=3, moment_match=False, frequency=xen.TimeGridFrequency.Day):
     if not isinstance(model, xen.Eq1FModel):
         raise Exception('Eq1FModel Type is needed')
@@ -139,7 +141,7 @@ def equity(model, scenario_num=1000, maxyear=3, moment_match=False, frequency=xe
     scen.general.maxyear = maxyear
     scen.general.scenario_num = scenario_num
     scen.general.moment_match = moment_match
-    scen.general.frequency = frequency
+    scen.general.frequency = frequency.value
 
     # setting additional calculation for martinagle test
     model.clear_calc()
@@ -161,8 +163,8 @@ def equity(model, scenario_num=1000, maxyear=3, moment_match=False, frequency=xe
     rnd_z = res.get_resultModel(model=model, calc=calc_randomZ)
 
     plt.figure(1)
-    plt.plot(res.timegrid['T'], equity.average(), label='equity_aver')
-    plt.plot(res.timegrid['T'], equity_uncon_expectation.data[0], label='equity_analytic')
+    plt.plot(res.timegrid.data['T'], equity.average(), label='equity_aver')
+    plt.plot(res.timegrid.data['T'], equity_uncon_expectation.data[0], label='equity_analytic')
     plt.title('equity_aver vs equity_analytic')
     plt.xlabel('time (year)')
     plt.ylabel('value')
