@@ -17,15 +17,10 @@ setup 을 실행하면, packages 에 python package 폴더가 들어가는데
 python setup_mxd.py sdist bdist -> 배포파일 만들기
 python -m pip install mxd-0.1.0.tar.gz
 
------------------------------------------------
-username : montrix
-id  : montrix
-email : montrix@naver.com
-
 -------------------------------------------
 pypi에 올리는 방법
 https://jwkcp.github.io/2018/03/11/how-to-deploy-to-pypi/
 pypi upload는 twine을 깔고
 
-test 서버 -> twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-real 서버 -> twine upload dist/*
+test server -> twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+real server -> twine upload dist/*
