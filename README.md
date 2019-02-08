@@ -79,7 +79,7 @@ res = xen_r.ResultObj(set_name, scen_id, result_id)
 
 # timegrid iter is pandas namedtuple
 for t in res.timegrid:
-    print t  # Pandas(INDEX=1L, DATE='2025-08-10', T=9.936986301369863, DT=0.002739726027396)
+    print t  # Pandas(INDEX=16L, DATE='2015-09-18', T=0.043835616438356005, DT=0.0027397260273970005)
 
 # select using scen_count
 multipath = res.get_multipath(scen_count=1)
