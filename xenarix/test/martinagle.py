@@ -19,7 +19,7 @@ def shortrate(model, scenario_num=1000, maxyear=3, moment_match=False, frequency
     scen.general.maxyear = maxyear
     scen.general.scenario_num = scenario_num
     scen.general.moment_match = moment_match
-    scen.general.frequency = frequency.value
+    scen.general.frequency = frequency
 
     # setting additional calculation for martinagle test
     model.clear_calc()
@@ -141,7 +141,7 @@ def equity(model, scenario_num=1000, maxyear=3, moment_match=False, frequency=xe
     scen.general.maxyear = maxyear
     scen.general.scenario_num = scenario_num
     scen.general.moment_match = moment_match
-    scen.general.frequency = frequency.value
+    scen.general.frequency = frequency
 
     # setting additional calculation for martinagle test
     model.clear_calc()

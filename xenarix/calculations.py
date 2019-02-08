@@ -148,6 +148,7 @@ class Spot(Rate):
         self.sections['COMPOUND'] = self.compound
         self.sections['OUT_VALUE_TYPE'] = self.out_value_type
 
+
 # tenor 랑 maturity가 같은 경우 순간선도로 계산함.
 class Forward(Rate):
     def __init__(self, calc_name, **kwargs):
@@ -218,7 +219,6 @@ class CMT(Bond):
         self.const_maturity = True
         self.roll_over = True
         self.out_value_type = 'VALUE'
-
 
     def pre_build(self):
         self.sections['CALC_TYPE'] = 'FIXED_BOND'

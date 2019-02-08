@@ -21,7 +21,7 @@ class General(Tag):
         self.rnd_seed = 1
         self.rnd_skip = 0
         self.moment_match = False
-        self.frequency = TimeGridFrequency.Day.value
+        self.frequency = TimeGridFrequency.Day
         self.frequency_month = 1
         self.frequency_day = 1
         self.result_id = "TESTRESULTID1"
@@ -373,8 +373,8 @@ class YieldCurve:
         self.value = []
         self.ref = None
         self.ref_using = False
-        self.interpolation = Interpolation.Linear.value
-        self.extrapolation = Extrapolation.FLAT.value
+        self.interpolation = Interpolation.Linear
+        self.extrapolation = Extrapolation.FLAT
 
     def get_sections(self, curve_name):
         d = OrderedDict()
@@ -396,8 +396,8 @@ class ParaCurve:
         self.value = []
         self.ref = None
         self.ref_using = False
-        self.interpolation = Interpolation.Linear.value
-        self.extrapolation = Extrapolation.FLAT.value
+        self.interpolation = Interpolation.Linear
+        self.extrapolation = Extrapolation.FLAT
 
     def get_sections(self, para_name):
         d = OrderedDict()
@@ -420,8 +420,8 @@ class VolSurface:
 
         self.ref = None
         self.ref_using = False
-        self.interpolation = Interpolation.Linear.value
-        self.extrapolation = Extrapolation.FLAT.value
+        self.interpolation = Interpolation.Linear
+        self.extrapolation = Extrapolation.FLAT
 
     def get_sections(self, surface_name):
         d = OrderedDict()
@@ -459,8 +459,6 @@ class HullWhite1F(Ir1FModel):
             v = [value] * len(self.sections['FITTING_CURVE_VALUE'])
 
         return v
-
-
 
 
 # brigo 93p : humped vol model
@@ -888,7 +886,6 @@ class HESTON(Eq2FModel):
         self.sections["RHO"] = self.rho
 
 
-
 class GarmanKohlhagen(Eq1FModel):
     def __init__(self, model_name, **arg):
         Eq1FModel.__init__(self, model_name, "GARMANKOHLHAGEN")
@@ -1084,9 +1081,8 @@ class Scenario:
         self.general.scenario_id = scen_id
         self.general.result_id = result_id
 
-
         self.variables = OrderedDict()
-        #self.exchange = OrderedDict() # 아직 미구현
+        #self.exchange = OrderedDict() # not implemeted
         self.processshocks = OrderedDict()
         self.models = OrderedDict()
         self.calculations = OrderedDict()
@@ -1099,7 +1095,6 @@ class Scenario:
         self.processinfo_category = Category("PROCESSINFO")
         self.shockinfo_category = Category("SHOCKINFO")
         self.add_shock(ProcessShockBase('BASE', self))
-
 
     def get_scen_id(self):
         return self.general.scenario_id
@@ -1389,6 +1384,7 @@ class ScenarioSet:
         f = open(xen_input_dir() + '\\' + new_set_name + xenset_extension, 'w')
         f.write(contents)
         f.close()
+
 
 # global method
 def get_scenario(scen_id):
