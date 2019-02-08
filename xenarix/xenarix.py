@@ -273,6 +273,8 @@ class ProcessModel(Tag):
         self.sections["MODEL_TYPE"] = self.model_type
         self.sections['CALCULATION'] = ['VALUE']
 
+        self.calculations = OrderedDict()
+
     def is_category(self, category):
         pass
 
@@ -286,6 +288,8 @@ class ProcessModel(Tag):
         pass
 
     def check_type(self, calc):
+        if isinstance(calc, BuiltInCalculation):
+            return  False
         return True
 
     def add_shock(self, shock_name, target, value):
@@ -295,17 +299,19 @@ class ProcessModel(Tag):
     def add_calc(self, calc):
         calc_name = calc.sections['NAME'].upper()
 
-        if not self.check_type(calc):
-            raise Exception('not valid calculation')
+        # if not self.check_type(calc):
+        #     raise Exception('not valid calculation')
 
         if calc_name not in self.sections['CALCULATION']:
             self.sections['CALCULATION'].append(calc_name)
+            if not isinstance(calc, BuiltInCalculation):
+                self.calculations[calc_name] = calc
         else:
             raise Exception('duplicated calculation')
 
-    def add_debug_calc(self, debug_calc_nm):
-        if debug_calc_nm not in self.sections['CALCULATION']:
-            self.sections['CALCULATION'].append(debug_calc_nm)
+    def add_builtin_calc(self, builtin_calc_nm):
+        if builtin_calc_nm not in self.sections['CALCULATION']:
+            self.sections['CALCULATION'].append(builtin_calc_nm)
 
     def clear_calc(self):
         self.sections['CALCULATION'] = ['VALUE']
@@ -1238,10 +1244,10 @@ class Scenario:
         scen_id = self.general.scenario_id
         result_id = self.general.result_id
 
+        self.set_calculations()
         self.check_error()
 
         temp_filename = self.save_temp(scen_id)
-
 
         # --setname=debug --scenario_file_temp --scenariofilename=lastgen.xen
         arg_str = ['--gen',
@@ -1323,6 +1329,13 @@ class Scenario:
     def add_shock(self, shock):
         self.processshocks[shock.sections['NAME']] = shock
 
+    def set_calculations(self):
+        self.calculations.clear()
+
+        for model in self.models.values():
+            for calc_obj in model.calculations.values():
+                self.regist_calc(calc_obj)
+
     def clear_calc(self):
         self.calculations.clear()
 
@@ -1335,7 +1348,7 @@ class Scenario:
         if nm in self.calculations:
             raise Exception('duplicated calc_name')
 
-        self.calculations[calc.sections['NAME']] = calc
+        self.calculations[nm] = calc
 
     def add_calc(self, calc, **kwargs):
         model_name = kwargs['model_name'].upper()

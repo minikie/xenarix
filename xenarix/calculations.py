@@ -10,112 +10,117 @@ class Calculation(Tag):
         self.calc_type = ''
 
 
-class UnknownCalculation(Calculation):
+class BuiltInCalculation(Calculation):
     def __init__(self, calc_name):
         Calculation.__init__(self, calc_name)
+
+
+class UnknownCalculation(BuiltInCalculation):
+    def __init__(self, calc_name):
+        BuiltInCalculation.__init__(self, calc_name)
 
         self.sections['MODEL_CATEGORY'] = 'ALL'
 
 
-class RandomZ(Calculation):
+class RandomZ(BuiltInCalculation):
     def __init__(self):
-        Calculation.__init__(self, 'RANDOMZ')
+        BuiltInCalculation.__init__(self, 'RANDOMZ')
 
         self.sections['MODEL_CATEGORY'] = 'ALL'
         self.sections['CALC_TYPE'] = 'RANDOMZ'
 
 
-class Expectation(Calculation):
+class Expectation(BuiltInCalculation):
     def __init__(self):
-        Calculation.__init__(self, 'EXPECTATION')
+        BuiltInCalculation.__init__(self, 'EXPECTATION')
 
         self.sections['MODEL_CATEGORY'] = 'ALL'
         self.sections['CALC_TYPE'] = 'EXPECTATION'
 
 
-class UnconditionalExpectation(Calculation):
+class UnconditionalExpectation(BuiltInCalculation):
     def __init__(self):
-        Calculation.__init__(self, 'UNCONDITIONALEXPECTATION')
+        BuiltInCalculation.__init__(self, 'UNCONDITIONALEXPECTATION')
 
         self.sections['MODEL_CATEGORY'] = 'ALL'
         self.sections['CALC_TYPE'] = 'UNCONDITIONALEXPECTATION'
 
 
-class Drift(Calculation):
+class Drift(BuiltInCalculation):
     def __init__(self):
-        Calculation.__init__(self, 'DRIFT')
+        BuiltInCalculation.__init__(self, 'DRIFT')
 
         self.sections['MODEL_CATEGORY'] = 'ALL'
         self.sections['CALC_TYPE'] = 'DRIFT'
 
 
-class Diffusion(Calculation):
+class Diffusion(BuiltInCalculation):
     def __init__(self):
-        Calculation.__init__(self, 'DIFFUSION')
+        BuiltInCalculation.__init__(self, 'DIFFUSION')
 
         self.sections['MODEL_CATEGORY'] = 'ALL'
         self.sections['CALC_TYPE'] = 'DIFFUSION'
 
 
-class XFirstFactor(Calculation):
+class XFirstFactor(BuiltInCalculation):
     def __init__(self):
-        Calculation.__init__(self, 'XFIRSTFACTOR')
+        BuiltInCalculation.__init__(self, 'XFIRSTFACTOR')
 
         self.sections['MODEL_CATEGORY'] = 'ALL'
         self.sections['CALC_TYPE'] = 'XFIRSTFACTOR'
 
 
-class YSecondFactor(Calculation):
+class YSecondFactor(BuiltInCalculation):
     def __init__(self):
-        Calculation.__init__(self, 'YSECONDFACTOR')
+        BuiltInCalculation.__init__(self, 'YSECONDFACTOR')
 
         self.sections['MODEL_CATEGORY'] = 'ALL'
         self.sections['CALC_TYPE'] = 'YSECONDFACTOR'
 
 
-class FittingTheta(Calculation):
+class FittingTheta(BuiltInCalculation):
     def __init__(self):
-        Calculation.__init__(self, 'FITTINGTHETA')
+        BuiltInCalculation.__init__(self, 'FITTINGTHETA')
 
         self.sections['MODEL_CATEGORY'] = 'TERMSTRUCTUREFITTINGMODEL'
         self.sections['CALC_TYPE'] = 'DRIFT'
 
 
-class FittingAlpha(Calculation):
+class FittingAlpha(BuiltInCalculation):
     def __init__(self):
-        Calculation.__init__(self, 'FITTINGALPHA')
+        BuiltInCalculation.__init__(self, 'FITTINGALPHA')
 
         self.sections['MODEL_CATEGORY'] = 'TERMSTRUCTUREFITTINGMODEL'
         self.sections['CALC_TYPE'] = 'FITTINGALPHA'
 
 
-class FittingForward(Calculation):
+class FittingForward(BuiltInCalculation):
     def __init__(self):
-        Calculation.__init__(self, 'FITTINGFORWARD')
+        BuiltInCalculation.__init__(self, 'FITTINGFORWARD')
 
         self.sections['MODEL_CATEGORY'] = 'TERMSTRUCTUREFITTINGMODEL'
         self.sections['CALC_TYPE'] = 'FITTINGFORWARD'
 
 
-class FittingSpot(Calculation):
+class FittingSpot(BuiltInCalculation):
     def __init__(self):
-        Calculation.__init__(self, 'FITTINGSPOT')
+        BuiltInCalculation.__init__(self, 'FITTINGSPOT')
 
         self.sections['MODEL_CATEGORY'] = 'TERMSTRUCTUREFITTINGMODEL'
         self.sections['CALC_TYPE'] = 'FITTINGSPOT'
 
 
-class FittingDiscount(Calculation):
+class FittingDiscount(BuiltInCalculation):
     def __init__(self):
-        Calculation.__init__(self, 'FITTINGDISCOUNT')
+        BuiltInCalculation.__init__(self, 'FITTINGDISCOUNT')
 
         self.sections['MODEL_CATEGORY'] = 'TERMSTRUCTUREFITTINGMODEL'
         self.sections['CALC_TYPE'] = 'FITTINGDISCOUNT'
 
 
-class ModelDiscount(Calculation):
+class ModelDiscount(BuiltInCalculation):
     def __init__(self):
-        Calculation.__init__(self, 'MODEL_DISCOUNTBOND')
+        BuiltInCalculation.__init__(self, 'MODEL_DISCOUNTBOND')
 
         self.sections['MODEL_CATEGORY'] = 'TERMSTRUCTUREFITTINGMODEL'
         self.sections['CALC_TYPE'] = 'MODEL_DISCOUNTBOND'
@@ -132,86 +137,105 @@ class Spot(Rate):
     def __init__(self, calc_name, **kwargs):
         Calculation.__init__(self, calc_name)
 
-        self.sections['CALC_TYPE'] = 'SPOT'
-        self.sections['MATURITY'] = '10Y'
-        self.sections['COMPOUND'] = 'ANNUAL'
-        self.sections['OUT_VALUE_TYPE'] = 'VALUE'
+        self.calc_type = 'SPOT'
+        self.maturity = '10Y'
+        self.compound = 'ANNUAL'
+        self.out_value_type = 'VALUE'
 
-        self.set_sections(**kwargs)
-
+    def pre_build(self):
+        self.sections['CALC_TYPE'] = self.calc_type
+        self.sections['MATURITY'] = self.maturity
+        self.sections['COMPOUND'] = self.compound
+        self.sections['OUT_VALUE_TYPE'] = self.out_value_type
 
 # tenor 랑 maturity가 같은 경우 순간선도로 계산함.
 class Forward(Rate):
     def __init__(self, calc_name, **kwargs):
         Calculation.__init__(self, calc_name)
 
-        self.sections['CALC_TYPE'] = 'FORWARD'
-        self.sections['START_TENOR'] = '10Y'
-        self.sections['MATURITY'] = '10Y'
-        self.sections['FORWARD_PERIOD'] = '3M'
-        self.sections['COMPOUND'] = 'ANNUAL'
-        self.sections['OUT_VALUE_TYPE'] = 'VALUE'
+        self.calc_type = 'FORWARD'
+        self.start_tenor = '10Y'
+        self.maturity = '3M'
+        self.compound = 'ANNUAL'
+        self.out_value_type = 'VALUE'
 
-        self.set_sections(**kwargs)
+    def pre_build(self):
+        self.sections['CALC_TYPE'] = self.calc_type
+        self.sections['START_TENOR'] = self.start_tenor
+        self.sections['MATURITY'] = self.maturity
+        self.sections['COMPOUND'] = self.compound
+        self.sections['OUT_VALUE_TYPE'] = self.out_value_type
 
 
 class Discount(Rate):
     def __init__(self, calc_name, **kwargs):
         Calculation.__init__(self, calc_name)
 
-        self.sections['CALC_TYPE'] = 'DISCOUNT'
-        self.sections['OUT_VALUE_TYPE'] = 'VALUE'
-        self.sections['MATURITY'] = '10Y'
+        self.calc_type = 'DISCOUNT'
+        self.out_value_type = 'VALUE'
+        self.maturity = '10Y'
 
-        self.set_sections(**kwargs)
-
-
-
+    def pre_build(self):
+        self.sections['CALC_TYPE'] = self.calc_type
+        self.sections['MATURITY'] = self.maturity
+        self.sections['OUT_VALUE_TYPE'] = self.out_value_type
 
 
 class Bond(Calculation):
     def __init__(self, calc_name):
         Calculation.__init__(self, calc_name)
-
         self.sections['MODEL_CATEGORY'] = 'IR'
 
 
 class ZeroBond(Bond):
-    def __init__(self, calc_name, **kwargs):
+    def __init__(self, calc_name):
         Calculation.__init__(self, calc_name)
+        self.notional = 1.0
+        self.maturity = '3Y'
+        self.const_maturity = True
+        self.roll_over = True
+        self.out_value_type = 'VALUE'
 
+    def pre_build(self):
         self.sections['CALC_TYPE'] = 'ZERO_BOND'
-
-        self.sections['NOTIONAL'] = 1.0
-        self.sections['MATURITY'] = '3Y'
-        self.sections['CONST_MATURITY'] = True
-        self.sections['ROLLOVER'] = True
-        self.sections['OUT_VALUE_TYPE'] = 'VALUE'
-
-        self.set_sections(**kwargs)
+        self.sections['NOTIONAL'] = self.notional
+        self.sections['MATURITY'] = self.maturity
+        self.sections['CONST_MATURITY'] = self.const_maturity
+        self.sections['ROLLOVER'] = self.roll_over
+        self.sections['OUT_VALUE_TYPE'] = self.out_value_type
 
 
 class CMT(Bond):
-    def __init__(self, calc_name, **kwargs):
+    def __init__(self, calc_name):
         Bond.__init__(self, calc_name)
 
+        self.notional = 1.0
+        self.maturity = '3Y'
+        self.coupon_tenor = '3M'
+        self.coupon_rate = 0.03
+        self.daycounter = 'ACTACT'
+        self.compounding = 'ANNUAL'
+        self.const_maturity = True
+        self.roll_over = True
+        self.out_value_type = 'VALUE'
+
+
+    def pre_build(self):
         self.sections['CALC_TYPE'] = 'FIXED_BOND'
 
-        self.sections['NOTIONAL'] = 1.0
-        self.sections['MATURITY'] = '3Y'
-        self.sections['COUPON_TENOR'] = '3M'
-        self.sections['COUPON_RATE'] = 0.03
-        self.sections['DAYCOUNTER'] = 'ACTACT'
-        self.sections['COMPOUNDING'] = 'ANNUAL'
-        self.sections['CONST_MATURITY'] = True
-        self.sections['ROLLOVER'] = True
-        self.sections['OUT_VALUE_TYPE'] = 'VALUE'
-
-        self.set_sections(**kwargs)
+        self.sections['NOTIONAL'] = self.notional
+        self.sections['MATURITY'] = self.maturity
+        self.sections['COUPON_TENOR'] = self.coupon_tenor
+        self.sections['COUPON_RATE'] = self.coupon_rate
+        self.sections['DAYCOUNTER'] = self.daycounter
+        self.sections['COMPOUNDING'] = self.compounding
+        self.sections['CONST_MATURITY'] = self.const_maturity
+        self.sections['ROLLOVER'] = self.roll_over
+        self.sections['OUT_VALUE_TYPE'] = self.out_value_type
 
 
 class CMS(Bond):
-    def __init__(self, calc_name, **kwargs):
+    def __init__(self, calc_name):
         Bond.__init__(self, calc_name)
 
         self.sections['CALC_TYPE'] = 'FIXED_BOND'
@@ -225,8 +249,6 @@ class CMS(Bond):
         self.sections['CONST_MATURITY'] = True
         self.sections['ROLLOVER'] = True
         self.sections['OUT_VALUE_TYPE'] = 'VALUE'
-
-        self.set_sections(**kwargs)
 
 
 class FixedBond(Bond):

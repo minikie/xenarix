@@ -57,7 +57,7 @@ class TimeGrid:
         self.data = build_timegrid_info2(self.set_name, self.scen_name, self.result_name)
 
     ###
-    # return T_Row
+    # return T_Row : left side only
     def find_closest_row_by_date(self, d):
         _d = d
         if isinstance(d, datetime.datetime):
@@ -76,18 +76,8 @@ class TimeGrid:
 
         return T_Row(pos, self.data.loc[pos]['DATE'], self.data.loc[pos]['T'], self.data.loc[pos]['DT'], False)
 
-    # return T_Row
-    def find_closest_row_by_t(self, t, interpolation=False):
-        def interpolate(before_row, t):
-            before_date = before_row['DATE']
-            before_t = before_row['T']
-            before_datetime = datetime.datetime.strptime(before_date, '%Y-%m-%d')
-
-            dt = t - before_t
-            date = before_datetime + datetime.timedelta(days=int(dt * 365))
-
-            return T_Row(before_row['INDEX'], date.strftime("%Y-%m-%d"), t, dt, True)
-
+    # return T_Row : left side only
+    def find_closest_row_by_t(self, t):
         _t = t
 
         rows = self.data['T']
@@ -101,10 +91,7 @@ class TimeGrid:
         # selecte before row
         pos -= 1
 
-        if interpolation:
-            return interpolate(self.data.loc[pos], _t)
-        else:
-            return T_Row(pos, self.data.loc[pos]['DATE'], self.data.loc[pos]['T'], self.data.loc[pos]['DT'], False)
+        return T_Row(pos, self.data.loc[pos]['DATE'], self.data.loc[pos]['T'], self.data.loc[pos]['DT'], False)
 
     def has_date(self, d):
         return (self.data['DATE'] == d).any()
@@ -123,12 +110,15 @@ class TimeGrid:
             t = before_t + float(days)/365
             dt = t - before_t
 
-            return T_Row(before_t_row.INDEX, d, t, dt, True)
+            return T_Row(before_t_row.INDEX+0.5, d, t, dt, True)
 
         rows = self.data[self.data['DATE'] == d]
 
         if rows.empty:
             if interpolation:
+                last_row = self.data.iloc[-1]
+                if last_row['DATE'] < d:
+                    raise Exception(d + ' is out of range, Max Date : ' + last_row['DATE'])
                 t_row = self.find_closest_row_by_date(d)
                 return interpolate(t_row, d)
             else:
@@ -163,15 +153,33 @@ class TimeGrid:
             return T_Row(pos, row['DATE'], row['T'], row['DT'], False)
 
     def pre_t_row(self, t_row):
-        return self.data.iloc[0]
+        if not isinstance(t_row, T_Row):
+            raise Exception('T_Row type is needed')
+
+        if not t_row.INDEX == 0:
+            if t_row.INTERPOLATED:
+                return self.pandas_row_to_t_row(self.data.iloc[int(t_row.INDEX)])
+            else:
+                return self.pandas_row_to_t_row(self.data.iloc[int(t_row.INDEX) - 1])
+
+        return None
 
     def next_t_row(self, t_row):
-        pass
+        if not isinstance(t_row, T_Row):
+            raise Exception('T_Row type is needed')
+
+        if not t_row.INDEX == len(self.data.index):
+            return self.pandas_row_to_t_row(self.data.iloc[int(t_row.INDEX) + 1])
+
+        return None
+
+    def pandas_row_to_t_row(self, pandas_row):
+        return T_Row(pandas_row['INDEX'], pandas_row['DATE'], pandas_row['T'], pandas_row['DT'], False)
 
 
 # file load numpy wrapping
 class ResultModel:
-    def __init__(self, result_data_info_row):
+    def __init__(self, result_data_info_row, timegrid):
         # REF_DT
         # RESULT_ID
         # RESULT_NM
@@ -202,26 +210,78 @@ class ResultModel:
         self.calc_name = result_data_info_row['CALCULATION']
         self.calc_type = result_data_info_row['CALC_TYPE']
 
+        self.timegrid = timegrid
         self.info = result_data_info_row
+
         if self.calc_type == 'DEBUGPRINT':
             self.scenario_num = 1
         self.data = np.memmap(self.filepath, np.double, mode='r', shape=(self.scenario_num, self.t_count))
 
+    def x0(self):
+        return self.data[0][0]
+
     def average(self):
         return np.average(self.data, axis=0)
 
-    # return shape : (scenario_num, t_count)
+    # return value selected scenario_count
+    def interpolated_value(self, scenario_count, t_row):
+        return np.interp(t_row.T, self.timegrid.data['T'], self.data[scenario_count,:])
+
     def interpolated_values(self, t_row):
-        if isinstance(t_row, T_Row):
-            v = self.data[t_row['INDEX']]
-            v_next = self.data[t_row['INDEX']+1]
+        if not isinstance(t_row, T_Row):
+            return None
 
-            t = t_row
+        if self.timegrid.has_date(t_row.DATE):
+            return self.data[:, t_row.INDEX]
 
-            return
+        pre_t_row = self.timegrid.pre_t_row(t_row)
+        next_t_row = self.timegrid.next_t_row(t_row)
 
+        y0 = self.data[:, pre_t_row.INDEX]
+        y1 = self.data[:, next_t_row.INDEX]
+        t0 = pre_t_row.T
+        t1 = next_t_row.T
+        t = t_row.T
 
+        y = y0 + (t-t0)* (y1-y0) / (t1-t0)
 
+        #print str(t0) + ' : ' + str(t1) + ',' + str(t)
+        #print str(y0) + ' : ' + str(y1) + ',' + str(y)
+
+        return y
+
+    # def interpolated_value2(self, scenario_count, t_row):
+    #     if isinstance(t_row, T_Row):
+    #         pre_t_row = self.timegrid.pre_t_row(t_row)
+    #         next_t_row = self.timegrid.next_t_row(t_row)
+    #
+    #         y0 = self.data[scenario_count][pre_t_row.INDEX]
+    #         y1 = self.data[scenario_count][next_t_row.INDEX]
+    #         t0 = pre_t_row.T
+    #         t1 = next_t_row.T
+    #         t = t_row.T
+    #
+    #         y = y0 + (t-t0)* (y1-y0) / (t1-t0)
+    #
+    #         #print str(t0) + ' : ' + str(t1) + ',' + str(t)
+    #         #print str(y0) + ' : ' + str(y1) + ',' + str(y)
+    #
+    #         return y
+
+    # return shape : (scenario_num, t_count)
+    # def interpolated_values(self, t_row):
+    #     if isinstance(t_row, T_Row):
+    #         pre_t_row = self.timegrid.pre_t_row(t_row)
+    #         next_t_row = self.timegrid.next_t_row(t_row)
+    #
+    #         y0 = self.data[scenario_count][pre_t_row.INDEX]
+    #         y1 = self.data[scenario_count][next_t_row.INDEX]
+    #         print str(y0) + ' : ' + str(y1)
+    #
+    #         # y = y0 + (t-t0)* (y1-y0) / (t1-t0)
+    #         y = y0 + (t_row.DT) * (y1 - y0) / (next_t_row.DT)
+    #
+    #         return y
 
 
 class ResultObj:
@@ -243,18 +303,20 @@ class ResultObj:
     def initialize(self):
         self.result_data_info = build_result_data_info2(self.set_name, self.scen_name, self.result_name)
 
+        # timegrid
+        # self.timegrid = build_timegrid_info2(self.set_name, self.scen_name, self.result_name)
+        self.timegrid = TimeGrid(self.set_name, self.scen_name, self.result_name)
+
         # models
         # self.names = []
         for index, row in self.result_data_info.iterrows():
             # if debug 가 아니면 넣기...?
-            rm = ResultModel(row)
+            rm = ResultModel(row, self.timegrid)
             key = str(row['REF_INDEX_CD']) + '_' + str(row['CALCULATION']) + '_' + str(row['SHOCK_NAME'])
             self.models[str.upper(key)] = rm
             # self.names.append(rm.name)
 
-        # timegrid
-        # self.timegrid = build_timegrid_info2(self.set_name, self.scen_name, self.result_name)
-        self.timegrid = TimeGrid(self.set_name, self.scen_name, self.result_name)
+
 
     # scen_count = 0 to scen_num - 1
     def get_multipath(self, scen_count, type='namedtuple'):
@@ -333,7 +395,7 @@ def resultModel_list(set_name, scen_name, result_name):
     return result_arr
 
 
-def result_list():
+def resultObj_list():
     res = []
     scen_set_items = os.listdir(xen.xen_result_dir())
 
