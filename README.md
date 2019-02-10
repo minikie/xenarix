@@ -14,9 +14,8 @@ Functionalty :
 -   Repository Setting
 -   Multi-Thread Generating
 -   TimeGrid Setting
--   Random Number Change
+-   Random Number Change (Mersenne Twister, Sobol)
 -   Moment-Matching Random
--   Sobol Sequence Integrated
 
 Models : 
 
