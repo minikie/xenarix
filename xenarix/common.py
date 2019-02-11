@@ -4,6 +4,7 @@ from enum import Enum
 from collections import OrderedDict
 import json
 import imp
+import numpy as np
 
 #xen_bin_dir = os.environ['XENARIX_BINPATH'].replace(';', '')
 xen_bin_dir = None
@@ -289,3 +290,140 @@ class Tag:
     def set_sections(self, **kwargs):
         for k, v in kwargs.items():
             self.sections[k.upper()] = value_to_string(v).upper()
+
+
+class Calculation(Tag):
+    def __init__(self, calc_name):
+        Tag.__init__(self, 'CALCULATION')
+        self.sections['NAME'] = calc_name
+        self.calc_name = calc_name
+        self.calc_type = ''
+
+
+class BuiltInCalculation(Calculation):
+    def __init__(self, calc_name):
+        Calculation.__init__(self, calc_name)
+
+
+class Variable(Tag):
+    def __init__(self, var_name):
+        Tag.__init__(self, "VARIABLE")
+        self.sections['NAME'] = var_name
+        self.var_name = var_name
+
+    def add_shockdef(self, shock_item):
+        raise Exception('not implemented')
+
+
+class ValueVariable(Variable):
+    def __init__(self, var_name, value=100):
+        Variable.__init__(self, var_name)
+        self.value = value
+
+        self.sections['VALUE'] = 1000
+        self.sections['VAR_TYPE'] = 'VALUE'
+
+        # self.sections['SHOCK:UP_MULTI:MULTIPLE'] = 1.1
+        # self.sections['SHOCK:DOWN_MULTI:MULTIPLE'] = 0.9
+        # self.sections['SHOCK:UP_ADD:ADD'] = 100
+        # self.sections['SHOCK:DOWN_ADD:ADD'] = -100
+
+    def add_shockdef(self, shock_item):
+        nm_str = 'SHOCK_DEF' + ':' + shock_item.name.upper() + ':' + shock_item.type.upper()
+        if shock_item.type == 'add' or shock_item.type == 'mul':
+            self.sections[nm_str] = shock_item.value
+        # elif shock_item.type == 'mul':
+        #     self.sections[nm_str] = shock_item.value
+        else:
+            raise Exception('unknown shock_item type')
+
+
+class YieldCurveVariable(Variable):
+    def __init__(self, var_name):
+        Variable.__init__(self, var_name)
+        value = np.array([1000, 1000, 1000, 1000, 1000])
+        self.sections['VALUE'] = value
+        self.sections['VAR_TYPE'] = 'YIELDCURVE'
+
+        self.sections['SHOCK:MULTIPLEUP:MULTIPLE'] = value * 1.1
+        self.sections['SHOCK:MULTIPLEDOWN:MULTIPLE'] = value * 0.9
+        self.sections['SHOCK:ADDUP:ADD'] = value + 100
+        self.sections['SHOCK:ADDDOWN:ADD'] = value - 100
+
+
+class VolCurveVariable(Variable):
+    def __init__(self, var_name):
+        Variable.__init__(self, var_name)
+        tenor = ['3M', '6M', '9M', '1Y', '2Y']
+        value = np.array([0.02, 0.02, 0.02, 0.02, 0.02])
+        self.sections['VAR_TYPE'] = 'VOLCURVE'
+
+        self.sections["FITTING_CURVE_TENOR"] = tenor
+        self.sections["FITTING_CURVE_VALUE"] = value
+        self.sections["FITTING_CURVE_INTERPOLATION"] = "LINEAR"
+        self.sections['SHOCK:PARALLELMULTIPLEUP:MULTIPLE'] = value * 1.1
+        self.sections['SHOCK:PARALLELMULTIPLEDOWN:MULTIPLE'] = value * 0.9
+        self.sections['SHOCK:PARALLELADDUP:ADD'] = value + 0.01
+        self.sections['SHOCK:PARALLELADDDOWN:ADD'] = value - 0.01
+
+
+class ProcessModel(Tag):
+    def __init__(self, model_name, model_type):
+        Tag.__init__(self, "PROCESS")
+        self.model_name = model_name
+        self.model_type = model_type
+
+        self.sections["NAME"] = self.model_name
+        self.sections["MODEL_TYPE"] = self.model_type
+        self.sections['CALCULATION'] = ['VALUE']
+
+        self.calculations = OrderedDict()
+
+    def is_category(self, category):
+        pass
+
+    def underlying_key(self):
+        pass
+
+    def underlying_shock_value(self, value):
+        pass
+
+    def factor(self):
+        pass
+
+    def check_type(self, calc):
+        if isinstance(calc, BuiltInCalculation):
+            return  False
+        return True
+
+    def add_shock(self, shock_name, target, value):
+        key = target + ':SHOCK:' + shock_name
+        self.sections[key] = value_to_string(value)
+
+    def add_calc(self, calc):
+        calc_name = calc.sections['NAME'].upper()
+
+        # if not self.check_type(calc):
+        #     raise Exception('not valid calculation')
+
+        if calc_name not in self.sections['CALCULATION']:
+            self.sections['CALCULATION'].append(calc_name)
+            if not isinstance(calc, BuiltInCalculation):
+                self.calculations[calc_name] = calc
+        else:
+            raise Exception('duplicated calculation')
+
+    def add_builtin_calc(self, builtin_calc_nm):
+        if builtin_calc_nm not in self.sections['CALCULATION']:
+            self.sections['CALCULATION'].append(builtin_calc_nm)
+
+    def clear_calc(self):
+        self.sections['CALCULATION'] = ['VALUE']
+
+    def pre_build_value(self, name, v):
+        if isinstance(v, ValueVariable):
+            self.sections[name] = v.value
+            self.sections[name + '_REF'] = v.var_name
+            self.sections[name + '_REF_USING'] = True
+        else:
+            self.sections[name] = v

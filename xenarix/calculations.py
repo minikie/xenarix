@@ -2,17 +2,7 @@
 from common import *
 
 
-class Calculation(Tag):
-    def __init__(self, calc_name):
-        Tag.__init__(self, 'CALCULATION')
-        self.sections['NAME'] = calc_name
-        self.calc_name = calc_name
-        self.calc_type = ''
 
-
-class BuiltInCalculation(Calculation):
-    def __init__(self, calc_name):
-        Calculation.__init__(self, calc_name)
 
 
 class UnknownCalculation(BuiltInCalculation):
@@ -155,14 +145,14 @@ class Forward(Rate):
         Calculation.__init__(self, calc_name)
 
         self.calc_type = 'FORWARD'
-        self.start_tenor = '10Y'
-        self.maturity = '3M'
+        self.forward_peoriod = '3M'
+        self.maturity = '10Y'
         self.compound = 'ANNUAL'
         self.out_value_type = 'VALUE'
 
     def pre_build(self):
         self.sections['CALC_TYPE'] = self.calc_type
-        self.sections['START_TENOR'] = self.start_tenor
+        self.sections['FORWARD_PEORIOD'] = self.forward_peoriod
         self.sections['MATURITY'] = self.maturity
         self.sections['COMPOUND'] = self.compound
         self.sections['OUT_VALUE_TYPE'] = self.out_value_type

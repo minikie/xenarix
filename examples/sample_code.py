@@ -3,7 +3,7 @@ import xenarix.sample as xen_s
 import xenarix.results as xen_r
 
 # default repository : [your_working_directory]\repository
-# xen.set_repository('c:\repository')
+xen.set_repository('c:\\xenarix')
 
 # scenario set
 set_name = 'set1'

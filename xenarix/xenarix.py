@@ -4,6 +4,7 @@ import os
 from collections import OrderedDict
 import datetime
 from calculations import *
+import results as xen_r
 
 
 class General(Tag):
@@ -68,69 +69,48 @@ class CalibrationGeneral(Tag):
         self.sections["RND_SEED"] = 1
 
 
-class Variable(Tag):
-    def __init__(self, variable_nm):
-        Tag.__init__(self, "VARIABLE")
-        self.sections['NAME'] = variable_nm
-
-
-class ValueVariable(Variable):
-    def __init__(self, variable_nm):
-        Variable.__init__(self, variable_nm)
-        self.sections['VALUE'] = 1000
-        self.sections['SHOCK:UP_MULTI:MULTIPLE'] = 1.1
-        self.sections['SHOCK:DOWN_MULTI:MULTIPLE'] = 0.9
-        self.sections['SHOCK:UP_ADD:ADD'] = 100
-        self.sections['SHOCK:DOWN_ADD:ADD'] = -100
-
-
-class ArrayVariable(Variable):
-    def __init__(self, variable_nm):
-        Variable.__init__(self, variable_nm)
-        value = np.array([1000, 1000, 1000, 1000, 1000])
-        self.sections['VALUE'] = value
-
-        self.sections['SHOCK:MULTIPLEUP:MULTIPLE'] = value * 1.1
-        self.sections['SHOCK:MULTIPLEDOWN:MULTIPLE'] = value * 0.9
-        self.sections['SHOCK:ADDUP:ADD'] = value + 100
-        self.sections['SHOCK:ADDDOWN:ADD'] = value - 100
-
-
-class CurveVariable(Variable):
-    def __init__(self, variable_nm):
-        Variable.__init__(self, variable_nm)
-        tenor = ['3M', '6M', '9M', '1Y', '2Y']
-        value = np.array([0.02, 0.02, 0.02, 0.02, 0.02])
-
-        self.sections["FITTING_CURVE_TENOR"] = tenor
-        self.sections["FITTING_CURVE_VALUE"] = value
-        self.sections["FITTING_CURVE_INTERPOLATION"] = "LINEAR"
-        self.sections['SHOCK:PARALLELMULTIPLEUP:MULTIPLE'] = value * 1.1
-        self.sections['SHOCK:PARALLELMULTIPLEDOWN:MULTIPLE'] = value * 0.9
-        self.sections['SHOCK:PARALLELADDUP:ADD'] = value + 0.01
-        self.sections['SHOCK:PARALLELADDDOWN:ADD'] = value - 0.01
+class ShockItem:
+    def __init__(self, name, target_variable, type, value):
+        self.name = name
+        self.target_variable = target_variable
+        self.type = type
+        self.value = value
 
 
 class VariableShock(Tag):
-    def __init__(self, variableshocks_name, owner_variable, category):
+    def __init__(self, variableshocks_name):
         Tag.__init__(self, 'VARIABLESHOCK')
-        self.owner_variable = owner_variable
         self.sections['NAME'] = variableshocks_name
-        self.category = category
+        self.shock_name = variableshocks_name
+        self.shock_items = OrderedDict()
 
-    def add_shock(self, variable_nm, shock_nm, weight):
-        nm_str = 'SHOCK' + ':' + variable_nm + ':' + shock_nm
-        self.sections[nm_str] = weight
+    def add_shock_item(self, target_variable, type, value):
+        #nm_str = 'SHOCK' + ':' + target_variable.name + ':' + target_variable.name + '_' + type
+        nm_str = target_variable.var_name + '_' + type
+        self.shock_items[nm_str] = ShockItem(nm_str, target_variable, type, value)
 
-    def remove_shock(self, variable_nm, shock_nm):
-        nm_str = 'SHOCK' + ':' + variable_nm + ':' + shock_nm
-        self.sections.pop(nm_str)
+    # SHOCK_VAR:VALUE:TESTVALUENAME1:NAME1:USE=1.0;
+	# SHOCK_VAR:CURVE:TESTYIELDCURVENAME1:PARALLELADDUP:USE=1.0;
+    def pre_build(self):
+        for s in self.shock_items.values():
+            nm_str = 'SHOCK_VAR' + ':' + s.type +  ':' + s.target_variable.var_name + ':' + s.name
+            self.sections[nm_str.upper()] = 1.0
+
+    # def add_shock(self, variable_nm, shock_nm, weight):
+    #     nm_str = 'SHOCK' + ':' + variable_nm + ':' + shock_nm
+    #     self.sections[nm_str] = weight
+    #
+    # def remove_shock(self, variable_nm, shock_nm):
+    #     nm_str = 'SHOCK' + ':' + variable_nm + ':' + shock_nm
+    #     self.sections.pop(nm_str)
 
 
 class ProcessShock(Tag):
     def __init__(self, processshocks_name, owner_scen, category):
         Tag.__init__(self, 'PROCESSSHOCK')
         self.owner_scen = owner_scen
+        self.shock_name = processshocks_name
+        self.shock_items = OrderedDict()
         self.sections['NAME'] = processshocks_name
         self.category = category
 
@@ -263,60 +243,6 @@ def get_model(tag):
         return UnknownModel(model_name, model_type)
 
 
-class ProcessModel(Tag):
-    def __init__(self, model_name, model_type):
-        Tag.__init__(self, "PROCESS")
-        self.model_name = model_name
-        self.model_type = model_type
-
-        self.sections["NAME"] = self.model_name
-        self.sections["MODEL_TYPE"] = self.model_type
-        self.sections['CALCULATION'] = ['VALUE']
-
-        self.calculations = OrderedDict()
-
-    def is_category(self, category):
-        pass
-
-    def underlying_key(self):
-        pass
-
-    def underlying_shock_value(self, value):
-        pass
-
-    def factor(self):
-        pass
-
-    def check_type(self, calc):
-        if isinstance(calc, BuiltInCalculation):
-            return  False
-        return True
-
-    def add_shock(self, shock_name, target, value):
-        key = target + ':SHOCK:' + shock_name
-        self.sections[key] = value_to_string(value)
-
-    def add_calc(self, calc):
-        calc_name = calc.sections['NAME'].upper()
-
-        # if not self.check_type(calc):
-        #     raise Exception('not valid calculation')
-
-        if calc_name not in self.sections['CALCULATION']:
-            self.sections['CALCULATION'].append(calc_name)
-            if not isinstance(calc, BuiltInCalculation):
-                self.calculations[calc_name] = calc
-        else:
-            raise Exception('duplicated calculation')
-
-    def add_builtin_calc(self, builtin_calc_nm):
-        if builtin_calc_nm not in self.sections['CALCULATION']:
-            self.sections['CALCULATION'].append(builtin_calc_nm)
-
-    def clear_calc(self):
-        self.sections['CALCULATION'] = ['VALUE']
-
-
 class UnknownModel(ProcessModel):
     def __init__(self, model_name, model_type):
         ProcessModel.__init__(self, model_name, model_type)
@@ -383,8 +309,8 @@ class YieldCurve:
         d[curve_name + "_CURVE_VALUE"] = self.value
         d[curve_name + "_CURVE_REF"] = 'NULL' if self.ref is None else self.ref
         d[curve_name + "_CURVE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
-        d[curve_name + "_CURVE_INTERPOLATION"] = self.interpolation
-        d[curve_name + "_CURVE_EXTRAPOLATION"] = self.extrapolation
+        d[curve_name + "_CURVE_INTERPOLATION"] = self.interpolation.value
+        d[curve_name + "_CURVE_EXTRAPOLATION"] = self.extrapolation.value
 
         return d
 
@@ -406,7 +332,7 @@ class ParaCurve:
         d['PARA_' + para_name + "_CURVE_VALUE"] = self.value
         d['PARA_' + para_name + "_CURVE_REF"] = 'NULL' if self.ref is None else self.ref
         d['PARA_' + para_name + "_CURVE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
-        d['PARA_' + para_name + "_CURVE_INTERPOLATION"] = self.interpolation
+        d['PARA_' + para_name + "_CURVE_INTERPOLATION"] = self.interpolation.value
 
         return d
 
@@ -431,8 +357,8 @@ class VolSurface:
         d[surface_name + "_SURFACE_MATRIX"] = self.matrix
         d[surface_name + "_SURFACE_REF"] = 'NULL' if self.ref is None else self.ref
         d[surface_name + "_SURFACE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
-        d[surface_name + "_SURFACE_INTERPOLATION"] = self.interpolation
-        d[surface_name + "_SURFACE_EXTRAPOLATION"] = self.extrapolation
+        d[surface_name + "_SURFACE_INTERPOLATION"] = self.interpolation.value
+        d[surface_name + "_SURFACE_EXTRAPOLATION"] = self.extrapolation.value
 
         return d
 
@@ -727,6 +653,8 @@ class Eq2FModel(ProcessModel):
         return float(self.sections['X0']) * value
 
 
+
+
 class GBM(Eq1FModel):
     def __init__(self, model_name, **arg):
         Eq1FModel.__init__(self, model_name, "GBM")
@@ -752,11 +680,14 @@ class GBMConst(Eq1FModel):
         self.div = 0.01
         self.sigma = 0.3
 
+
+
+
     def pre_build(self):
-         self.sections["X0"] = self.x0
-         self.sections["RF"] = self.rf
-         self.sections["DIVIDEND"] = self.div
-         self.sections["SIGMA"] = self.sigma
+        self.pre_build_value('X0', self.x0)
+        self.pre_build_value('RF', self.rf)
+        self.pre_build_value('DIVIDEND', self.div)
+        self.pre_build_value('SIGMA', self.sigma)
 
 
 class GBMLocalVol(Eq1FModel):
@@ -1083,7 +1014,8 @@ class Scenario:
 
         self.variables = OrderedDict()
         #self.exchange = OrderedDict() # not implemeted
-        self.processshocks = OrderedDict()
+        #self.processshocks = OrderedDict()
+        self.shocks = OrderedDict()
         self.models = OrderedDict()
         self.calculations = OrderedDict()
         self.correlation = Correlation()
@@ -1170,10 +1102,26 @@ class Scenario:
             elif model_tag.tag_name == 'CORRELATION':
                 self.correlation.load_tag(model_tag)
 
+    def add_variable(self, variable):
+        if not isinstance(variable, Variable):
+            raise Exception('Variable type is needed')
+
+        if variable.var_name in self.models:
+            raise Exception('duplicated varaible name : ' + variable.var_name)
+        self.variables[variable.var_name] = variable
+
     def add_model(self, model):
+        if not isinstance(model, ProcessModel):
+            raise Exception('ProcessModel type is needed')
+
         if model.model_name in self.models:
             raise Exception('duplicated model_name : ' + model.model_name)
         self.models[model.model_name] = model
+
+    def add_shock(self, shock):
+        if shock.shock_name in self.shocks:
+            raise Exception('duplicated shock name : ' + shock.shock_name)
+        self.shocks[shock.shock_name] = shock
 
     def refresh_corr(self):
         dim = sum([m.factor() for m in self.models.values()])
@@ -1201,7 +1149,7 @@ class Scenario:
         for vari in self.variables.values():
             self.variableinfo_category.tags.append(vari)
 
-        for shock in self.processshocks.values():
+        for shock in self.shocks.values():
             self.shockinfo_category.tags.append(shock)
 
         for calc in self.calculations.values():
@@ -1239,6 +1187,7 @@ class Scenario:
         scen_id = self.general.scenario_id
         result_id = self.general.result_id
 
+        self.set_shock_variables()
         self.set_calculations()
         self.check_error()
 
@@ -1301,29 +1250,33 @@ class Scenario:
     # def get_result_list(self):
     #     return result_list(self. self.general.scenario_id)
 
-    def get_shock_list(self):
-        return self.processshocks.keys()
 
-    def get_shock(self, shock_name, **kwargs):
-        typ = kwargs['type']
-        category = None
-        shk_nm = shock_name.upper()
+    # def get_shock(self, shock_name, **kwargs):
+    #     typ = kwargs['type']
+    #     category = None
+    #     shk_nm = shock_name.upper()
+    #
+    #     if 'category' in kwargs:
+    #         category = kwargs['category']
+    #
+    #     if typ == 'underlying':
+    #         return ProcessShockUnderlying(shk_nm, self, category)
+    #     elif typ == 'base':
+    #         return ProcessShockBase(shk_nm, self, category)
+    #     elif typ == 'volatility':
+    #         return ProcessShockVolatility(shk_nm, self, category)
+    #     else:
+    #         return ProcessShockCustom(shk_nm, self)
 
-        if 'category' in kwargs:
-            category = kwargs['category']
+    # set shockdef to each variable
+    def set_shock_variables(self):
+        for shock_obj in self.shocks.values():
+            for shock_item in shock_obj.shock_items.values():
+                self.variables[shock_item.target_variable.var_name].add_shockdef(shock_item)
 
-        if typ == 'underlying':
-            return ProcessShockUnderlying(shk_nm, self, category)
-        elif typ == 'base':
-            return ProcessShockBase(shk_nm, self, category)
-        elif typ == 'volatility':
-            return ProcessShockVolatility(shk_nm, self, category)
-        else:
-            return ProcessShockCustom(shk_nm, self)
 
-    def add_shock(self, shock):
-        self.processshocks[shock.sections['NAME']] = shock
-
+    # set calc_obj from ProcessModel class to Scenario
+    # common calculation is needed
     def set_calculations(self):
         self.calculations.clear()
 
@@ -1458,6 +1411,7 @@ def test_generate(scenSetID, scenID, resultID):
     scen_set.add_scenario(scen)
 
     scen_set.generate()
+
 
 
 

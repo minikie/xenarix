@@ -228,6 +228,7 @@ class VanillaEqOption:
         bs = BS([S, self.X, rf-div, t_row.T], volatility=sigma)
         return bs.callPrice
 
+
 def eq_up_out_call():
     scen_set = xen.ScenarioSet('test_set')
     scen = xen.Scenario('eq_multi', 'pricing1')

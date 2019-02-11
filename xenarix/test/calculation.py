@@ -41,7 +41,7 @@ def shortrate(model, scenario_num=1000, maxyear=3, moment_match=False, frequency
     model.add_calc(calc_forward_1M)
 
     calc_forward_1Y_1M = xen_c.Forward('test_forward1y_1m')
-    calc_forward_1Y_1M.start_tenor = '1Y'
+    calc_forward_1Y_1M.forward_peoriod = '1Y'
     calc_forward_1Y_1M.maturity = '1M'
     model.add_calc(calc_forward_1Y_1M)
 
@@ -50,7 +50,7 @@ def shortrate(model, scenario_num=1000, maxyear=3, moment_match=False, frequency
     model.add_calc(calc_forward_1Y)
 
     calc_forward_1Y_1Y = xen_c.Forward('test_forward1y_1y')
-    calc_forward_1Y_1Y.start_tenor = '1Y'
+    calc_forward_1Y_1Y.forward_peoriod = '1Y'
     calc_forward_1Y_1Y.maturity = '1Y'
     model.add_calc(calc_forward_1Y_1Y)
 
