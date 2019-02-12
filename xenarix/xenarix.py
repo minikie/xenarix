@@ -87,7 +87,7 @@ class VariableShock(Tag):
     def add_shock_item(self, target_variable, type, value):
         #nm_str = 'SHOCK' + ':' + target_variable.name + ':' + target_variable.name + '_' + type
         nm_str = target_variable.var_name + '_' + type
-        self.shock_items[nm_str] = ShockItem(nm_str, target_variable, type, value)
+        self.shock_items[target_variable.var_name] = ShockItem(nm_str, target_variable, type, value)
 
     # SHOCK_VAR:VALUE:TESTVALUENAME1:NAME1:USE=1.0;
 	# SHOCK_VAR:CURVE:TESTYIELDCURVENAME1:PARALLELADDUP:USE=1.0;
@@ -292,32 +292,8 @@ class Ir2FModel(ProcessModel):
         return value
 
 
-class YieldCurve:
-    def __init__(self, owner_model):
-        self.owner_model = owner_model
-        self.tenor = []
-        self.value = []
-        self.ref = None
-        self.ref_using = False
-        self.interpolation = Interpolation.Linear
-        self.extrapolation = Extrapolation.FLAT
-
-    def get_sections(self, curve_name):
-        d = OrderedDict()
-
-        d[curve_name + "_CURVE_TENOR"] = self.tenor
-        d[curve_name + "_CURVE_VALUE"] = self.value
-        d[curve_name + "_CURVE_REF"] = 'NULL' if self.ref is None else self.ref
-        d[curve_name + "_CURVE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
-        d[curve_name + "_CURVE_INTERPOLATION"] = self.interpolation.value
-        d[curve_name + "_CURVE_EXTRAPOLATION"] = self.extrapolation.value
-
-        return d
-
-
 class ParaCurve:
-    def __init__(self, owner_model):
-        self.owner_model = owner_model
+    def __init__(self):
         self.tenor = []
         self.value = []
         self.ref = None
@@ -325,7 +301,7 @@ class ParaCurve:
         self.interpolation = Interpolation.Linear
         self.extrapolation = Extrapolation.FLAT
 
-    def get_sections(self, para_name):
+    def make_sections(self, para_name):
         d = OrderedDict()
 
         d['PARA_' + para_name + "_CURVE_TENOR"] = self.tenor
@@ -337,43 +313,18 @@ class ParaCurve:
         return d
 
 
-class VolSurface:
-    def __init__(self, owner_model):
-        self.owner_model = owner_model
-        self.tenor = []
-        self.strike = []
-        self.matrix = []
-
-        self.ref = None
-        self.ref_using = False
-        self.interpolation = Interpolation.Linear
-        self.extrapolation = Extrapolation.FLAT
-
-    def get_sections(self, surface_name):
-        d = OrderedDict()
-
-        d[surface_name + "_SURFACE_TENOR"] = self.tenor
-        d[surface_name + "_SURFACE_STRIKE"] = self.strike
-        d[surface_name + "_SURFACE_MATRIX"] = self.matrix
-        d[surface_name + "_SURFACE_REF"] = 'NULL' if self.ref is None else self.ref
-        d[surface_name + "_SURFACE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
-        d[surface_name + "_SURFACE_INTERPOLATION"] = self.interpolation.value
-        d[surface_name + "_SURFACE_EXTRAPOLATION"] = self.extrapolation.value
-
-        return d
-
 
 class HullWhite1F(Ir1FModel):
     def __init__(self, model_name):
         Ir1FModel.__init__(self, model_name, "HULLWHITE1F")
-        self.fitting_curve = YieldCurve(self)
-        self.alpha_curve = ParaCurve(self)
-        self.sigma_curve = ParaCurve(self)
+        self.fitting_curve = YieldCurve()
+        self.alpha_curve = ParaCurve()
+        self.sigma_curve = ParaCurve()
 
     def pre_build(self):
-        self.sections.update(self.fitting_curve.get_sections('FITTING'))
-        self.sections.update(self.alpha_curve.get_sections('ALPHA'))
-        self.sections.update(self.sigma_curve.get_sections('SIGMA'))
+        self.sections.update(self.fitting_curve.make_sections('FITTING'))
+        self.sections.update(self.alpha_curve.make_sections('ALPHA'))
+        self.sections.update(self.sigma_curve.make_sections('SIGMA'))
 
     def underlying_key(self):
         return 'FITTING_CURVE_VALUE'
@@ -446,14 +397,14 @@ class BK1F(Ir1FModel):
     def __init__(self, model_name):
         Ir1FModel.__init__(self, model_name, "BK1F")
 
-        self.fitting_curve = YieldCurve(self)
-        self.alpha_curve = ParaCurve(self)
-        self.sigma_curve = ParaCurve(self)
+        self.fitting_curve = YieldCurve()
+        self.alpha_curve = ParaCurve()
+        self.sigma_curve = ParaCurve()
 
     def pre_build(self):
-        self.sections.update(self.fitting_curve.get_sections('FITTING'))
-        self.sections.update(self.alpha_curve.get_sections('ALPHA'))
-        self.sections.update(self.sigma_curve.get_sections('SIGMA'))
+        self.sections.update(self.fitting_curve.make_sections('FITTING'))
+        self.sections.update(self.alpha_curve.make_sections('ALPHA'))
+        self.sections.update(self.sigma_curve.make_sections('SIGMA'))
 
     def underlying_key(self):
         return 'FITTING_CURVE_VALUE'
@@ -653,22 +604,24 @@ class Eq2FModel(ProcessModel):
         return float(self.sections['X0']) * value
 
 
-
-
 class GBM(Eq1FModel):
     def __init__(self, model_name, **arg):
         Eq1FModel.__init__(self, model_name, "GBM")
 
         self.x0 = 100
-        self.rf_curve = YieldCurve(self)
-        self.div_curve = YieldCurve(self)
-        self.sigma_curve = YieldCurve(self)
+        self.rf_curve = YieldCurve()
+        self.div_curve = YieldCurve()
+        self.sigma_curve = YieldCurve()
 
     def pre_build(self):
-        self.sections['X0'] = self.x0
-        self.sections.update(self.rf_curve.get_sections('RF'))
-        self.sections.update(self.div_curve.get_sections('DIVIDEND'))
-        self.sections.update(self.sigma_curve.get_sections('SIGMA'))
+        self.pre_build_value('X0', self.x0)
+        self.pre_build_yieldcurve('RF', self.rf_curve)
+        self.pre_build_yieldcurve('DIVIDEND', self.div_curve)
+        self.pre_build_volcurve('SIGMA', self.sigma_curve)
+
+        # self.sections.update(self.rf_curve.make_sections('RF'))
+        # self.sections.update(self.div_curve.make_sections('DIVIDEND'))
+        # self.sections.update(self.sigma_curve.make_sections('SIGMA'))
 
 
 class GBMConst(Eq1FModel):
@@ -679,9 +632,6 @@ class GBMConst(Eq1FModel):
         self.rf = 0.03
         self.div = 0.01
         self.sigma = 0.3
-
-
-
 
     def pre_build(self):
         self.pre_build_value('X0', self.x0)
@@ -695,9 +645,9 @@ class GBMLocalVol(Eq1FModel):
         Eq1FModel.__init__(self, model_name, "GBM_LOCALVOL")
 
         self.x0 = 100
-        self.rf_curve = YieldCurve(self)
-        self.div_curve = YieldCurve(self)
-        self.sigma_surface = VolSurface(self)
+        self.rf_curve = YieldCurve()
+        self.div_curve = YieldCurve()
+        self.sigma_surface = VolSurface()
 
         self.sections["SIGMA_SURFACE_TENOR"] = []
         self.sections["SIGMA_SURFACE_STRIKE"] = []
@@ -705,89 +655,9 @@ class GBMLocalVol(Eq1FModel):
 
     def pre_build(self):
         self.sections['X0'] = self.x0
-        self.sections.update(self.rf_curve.get_sections('RF'))
-        self.sections.update(self.div_curve.get_sections('DIVIDEND'))
-        self.sections.update(self.sigma_surface.get_sections('SIGMA'))
-
-
-class CEV(Eq1FModel):
-    def __init__(self, model_name, **arg):
-        Eq1FModel.__init__(self, model_name, "CEV")
-
-        # self.x0 = 100
-        # self.curve_tenor = []
-        # self.rf_curve_value = []
-        # self.div_curve_value = []
-        # self.sigma_curve_value = []
-        #
-        # self.rf_curve_interpolation = "LINEAR"
-        # self.div_curve_interpolation = "LINEAR"
-        # self.sigma_curve_interpolation = "LINEAR"
-
-        self.sections["X0"] = 100
-        self.sections["RF_CURVE_TENOR"] = []
-        self.sections["RF_CURVE_VALUE"] = []
-
-        self.sections["DIVIDEND_CURVE_TENOR"] = []
-        self.sections["DIVIDEND_CURVE_VALUE"] = []
-
-        self.sections["SIGMA_CURVE_TENOR"] = []
-        self.sections["SIGMA_CURVE_VALUE"] = []
-
-        self.sections["RF_CURVE_INTERPOLATION"] = "LINEAR"
-        self.sections["DIVIDEND_CURVE_INTERPOLATION"] = "LINEAR"
-        self.sections["SIGMA_CURVE_INTERPOLATION"] = "LINEAR"
-
-        self.sections["LEVERAGE"] = 1.0
-
-
-class CEVConst(Eq1FModel):
-    def __init__(self, model_name, **arg):
-        Eq1FModel.__init__(self, model_name, "CEV_CONST")
-
-        # self.x0 = 100
-        # self.rf = 0.03
-        # self.div = 0.01
-        # self.sigma = 0.3
-
-        self.sections["X0"] = 100
-        self.sections["RF"] = 0.03
-        self.sections["DIVIDEND"] = 0.01
-        self.sections["SIGMA"] = 0.3
-        self.sections["LEVERAGE"] = 1.0
-
-
-class CEVLocalVol(Eq1FModel):
-    def __init__(self, model_name, **arg):
-        Eq1FModel.__init__(self, model_name, "CEV_LOCALVOL")
-
-        # self.x0 = 100
-        # self.curve_tenor = []
-        # self.rf_curve_value = []
-        # self.rf_curve_interpolation = "LINEAR"
-        #
-        # self.div_curve_value = []
-        # self.div_curve_interpolation = "LINEAR"
-        #
-        # self.sigma_surface_moneyness = []
-        # self.sigma_surface_value = []
-        # self.sigma_surface_interpolation = "LINEAR"
-
-        self.sections["X0"] = 100
-        self.sections["RF_CURVE_TENOR"] = []
-        self.sections["RF_CURVE_VALUE"] = []
-
-        self.sections["DIVIDEND_CURVE_TENOR"] = []
-        self.sections["DIVIDEND_CURVE_VALUE"] = []
-
-        self.sections["SIGMA_SURFACE_TENOR"] = []
-        self.sections["SIGMA_SURFACE_STRIKE"] = []
-        self.sections["SIGMA_SURFACE_MATRIX"] = []
-
-        self.sections["RF_CURVE_INTERPOLATION"] = "LINEAR"
-        self.sections["DIVIDEND_CURVE_INTERPOLATION"] = "LINEAR"
-        self.sections["SIGMA_SURFACE_INTERPOLATION"] = "LINEAR"
-        self.sections["LEVERAGE"] = 1.0
+        self.sections.update(self.rf_curve.make_sections('RF'))
+        self.sections.update(self.div_curve.make_sections('DIVIDEND'))
+        self.sections.update(self.sigma_surface.make_sections('SIGMA'))
 
 
 class HESTON(Eq2FModel):
@@ -795,9 +665,9 @@ class HESTON(Eq2FModel):
         Eq2FModel.__init__(self, model_name, "HESTON")
 
         self.x0 = 100
-        self.rf_curve = YieldCurve(self)
-        self.div_curve = YieldCurve(self)
-        self.sigma_curve = YieldCurve(self)
+        self.rf_curve = YieldCurve()
+        self.div_curve = YieldCurve()
+        self.sigma_curve = YieldCurve()
 
         self.v0 = 0.3
         self.kapa = 0.1
@@ -806,15 +676,16 @@ class HESTON(Eq2FModel):
         self.rho = 0.5
 
     def pre_build(self):
-        self.sections['X0'] = self.x0
-        self.sections.update(self.rf_curve.get_sections('RF'))
-        self.sections.update(self.div_curve.get_sections('DIVIDEND'))
-        self.sections.update(self.sigma_curve.get_sections('SIGMA'))
-        self.sections["V0"] = self.v0
-        self.sections["KAPA"] = self.kapa
-        self.sections["LONG_VARIANCE"] = self.long_variance
-        self.sections["VOLOFVOL"] = self.volofvol
-        self.sections["RHO"] = self.rho
+        self.pre_build_value('X0', self.x0)
+        self.pre_build_yieldcurve('RF', self.rf_curve)
+        self.pre_build_yieldcurve('DIVIDEND', self.div_curve)
+        self.pre_build_volcurve('SIGMA', self.sigma_curve)
+
+        self.pre_build_value('V0', self.x0)
+        self.pre_build_value('KAPA', self.kapa)
+        self.pre_build_value('LONG_VARIANCE', self.long_variance)
+        self.pre_build_value('VOLOFVOL', self.volofvol)
+        self.pre_build_value('RHO', self.rho)
 
 
 class GarmanKohlhagen(Eq1FModel):
@@ -822,15 +693,15 @@ class GarmanKohlhagen(Eq1FModel):
         Eq1FModel.__init__(self, model_name, "GARMANKOHLHAGEN")
 
         self.x0 = 100
-        self.dom_rf_curve = YieldCurve(self)
-        self.for_rf_curve = YieldCurve(self)
-        self.sigma_curve = YieldCurve(self)
+        self.dom_rf_curve = YieldCurve()
+        self.for_rf_curve = YieldCurve()
+        self.sigma_curve = YieldCurve()
 
     def pre_build(self):
-        self.sections['X0'] = self.x0
-        self.sections.update(self.dom_rf_curve.get_sections('DOMESTIC_RF'))
-        self.sections.update(self.for_rf_curve.get_sections('FOREIGN_RF'))
-        self.sections.update(self.sigma_curve.get_sections('SIGMA'))
+        self.pre_build_value('X0', self.x0)
+        self.pre_build_yieldcurve('DOMESTIC_RF', self.dom_rf_curve)
+        self.pre_build_yieldcurve('FOREIGN_RF', self.for_rf_curve)
+        self.pre_build_volcurve('SIGMA', self.sigma_curve)
 
 
 class CalibrationTool(Tag):
@@ -921,12 +792,12 @@ class Calibrator:
     def save_as(self, new_id):
         self.general.sections['CALIBRATION_ID'] = new_id
         self.build()
-        f = open(xen_cali_input_dir + '\\' + new_id + xen_extension, 'w')
+        f = open(xen_cali_input_dir() + '\\' + new_id + xen_extension, 'w')
         f.write(self.contents)
         f.close()
 
     def load(self, id):
-        fpath = xen_cali_input_dir + '\\' + id + xen_extension
+        fpath = xen_cali_input_dir() + '\\' + id + xen_extension
         if not os.path.exists(fpath):
             raise IOError()
 

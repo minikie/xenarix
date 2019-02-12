@@ -305,6 +305,75 @@ class BuiltInCalculation(Calculation):
         Calculation.__init__(self, calc_name)
 
 
+class YieldCurve:
+    def __init__(self):
+        self.tenor = []
+        self.value = []
+        self.ref = None
+        self.ref_using = False
+        self.interpolation = Interpolation.Linear
+        self.extrapolation = Extrapolation.FLAT
+
+    def make_sections(self, curve_name):
+        d = OrderedDict()
+
+        d[curve_name + "_CURVE_TENOR"] = self.tenor
+        d[curve_name + "_CURVE_VALUE"] = self.value
+        d[curve_name + "_CURVE_REF"] = 'NULL' if self.ref is None else self.ref
+        d[curve_name + "_CURVE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
+        d[curve_name + "_CURVE_INTERPOLATION"] = self.interpolation.value
+        d[curve_name + "_CURVE_EXTRAPOLATION"] = self.extrapolation.value
+
+        return d
+
+
+class VolCurve:
+    def __init__(self):
+        self.tenor = []
+        self.value = []
+        self.ref = None
+        self.ref_using = False
+        self.interpolation = Interpolation.Linear
+        self.extrapolation = Extrapolation.FLAT
+
+    def make_sections(self, curve_name):
+        d = OrderedDict()
+
+        d[curve_name + "_CURVE_TENOR"] = self.tenor
+        d[curve_name + "_CURVE_VALUE"] = self.value
+        d[curve_name + "_CURVE_REF"] = 'NULL' if self.ref is None else self.ref
+        d[curve_name + "_CURVE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
+        d[curve_name + "_CURVE_INTERPOLATION"] = self.interpolation.value
+        d[curve_name + "_CURVE_EXTRAPOLATION"] = self.extrapolation.value
+
+        return d
+
+
+class VolSurface:
+    def __init__(self):
+        self.tenor = []
+        self.strike = []
+        self.matrix = []
+
+        self.ref = None
+        self.ref_using = False
+        self.interpolation = Interpolation.Linear
+        self.extrapolation = Extrapolation.FLAT
+
+    def make_sections(self, surface_name):
+        d = OrderedDict()
+
+        d[surface_name + "_SURFACE_TENOR"] = self.tenor
+        d[surface_name + "_SURFACE_STRIKE"] = self.strike
+        d[surface_name + "_SURFACE_MATRIX"] = self.matrix
+        d[surface_name + "_SURFACE_REF"] = 'NULL' if self.ref is None else self.ref
+        d[surface_name + "_SURFACE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
+        d[surface_name + "_SURFACE_INTERPOLATION"] = self.interpolation.value
+        d[surface_name + "_SURFACE_EXTRAPOLATION"] = self.extrapolation.value
+
+        return d
+
+
 class Variable(Tag):
     def __init__(self, var_name):
         Tag.__init__(self, "VARIABLE")
@@ -312,15 +381,13 @@ class Variable(Tag):
         self.var_name = var_name
 
     def add_shockdef(self, shock_item):
-        raise Exception('not implemented')
+        pass
 
 
 class ValueVariable(Variable):
     def __init__(self, var_name, value=100):
         Variable.__init__(self, var_name)
         self.value = value
-
-        self.sections['VALUE'] = 1000
         self.sections['VAR_TYPE'] = 'VALUE'
 
         # self.sections['SHOCK:UP_MULTI:MULTIPLE'] = 1.1
@@ -328,9 +395,14 @@ class ValueVariable(Variable):
         # self.sections['SHOCK:UP_ADD:ADD'] = 100
         # self.sections['SHOCK:DOWN_ADD:ADD'] = -100
 
+    def pre_build(self):
+        self.sections['VALUE'] = self.value
+
     def add_shockdef(self, shock_item):
         nm_str = 'SHOCK_DEF' + ':' + shock_item.name.upper() + ':' + shock_item.type.upper()
-        if shock_item.type == 'add' or shock_item.type == 'mul':
+        if shock_item.type == 'add' or shock_item.type == 'mul' or shock_item.type == 'custom':
+            if isinstance(shock_item.value, list):
+                raise Exception('list type is not allowed')
             self.sections[nm_str] = shock_item.value
         # elif shock_item.type == 'mul':
         #     self.sections[nm_str] = shock_item.value
@@ -338,33 +410,61 @@ class ValueVariable(Variable):
             raise Exception('unknown shock_item type')
 
 
+#[VARIABLE]
+#NAME=TESTYIELDCURVENAME1;
+#VAR_TYPE=YIELDCURVE;
+#REF_CURVE_TENOR=3M|6M|9M|12M|24M|36M|48M|60M|120M|240M|1200M|;
+#REF_CURVE_VALUE=0.03|0.031|0.032|0.033|0.034|0.035|0.036|0.037|0.038|0.039|0.042|;
 class YieldCurveVariable(Variable):
     def __init__(self, var_name):
         Variable.__init__(self, var_name)
-        value = np.array([1000, 1000, 1000, 1000, 1000])
-        self.sections['VALUE'] = value
+
+        self.tenor = ['3M', '6M', '9M', '1Y', '2Y']
+        self.value = np.array([0.02, 0.02, 0.02, 0.02, 0.02])
+        self.interpolation = Interpolation.Linear
+        self.extrapolation = Extrapolation.FLAT
+
         self.sections['VAR_TYPE'] = 'YIELDCURVE'
 
-        self.sections['SHOCK:MULTIPLEUP:MULTIPLE'] = value * 1.1
-        self.sections['SHOCK:MULTIPLEDOWN:MULTIPLE'] = value * 0.9
-        self.sections['SHOCK:ADDUP:ADD'] = value + 100
-        self.sections['SHOCK:ADDDOWN:ADD'] = value - 100
+    def add_shockdef(self, shock_item):
+        nm_str = 'SHOCK_DEF' + ':' + shock_item.name.upper() + ':' + shock_item.type.upper()
+        if shock_item.type == 'add' or shock_item.type == 'mul' or shock_item.type == 'custom':
+            self.sections[nm_str] = shock_item.value
+        # elif shock_item.type == 'mul':
+        #     self.sections[nm_str] = shock_item.value
+        else:
+            raise Exception('unknown shock_item type')
+
+    def pre_build(self):
+        self.sections['REF_CURVE_INTERPOLATION'] = self.interpolation.value
+        self.sections['REF_CURVE_EXTRAPOLATION'] = self.extrapolation.value
+        self.sections["REF_CURVE_TENOR"] = self.tenor
+        self.sections["REF_CURVE_VALUE"] = self.value
 
 
 class VolCurveVariable(Variable):
     def __init__(self, var_name):
         Variable.__init__(self, var_name)
-        tenor = ['3M', '6M', '9M', '1Y', '2Y']
-        value = np.array([0.02, 0.02, 0.02, 0.02, 0.02])
+
+        self.tenor = ['3M', '6M', '9M', '1Y', '2Y']
+        self.value = np.array([0.3, 0.3, 0.3, 0.3, 0.3])
+        self.interpolation = Interpolation.Linear
+        self.extrapolation = Extrapolation.FLAT
+
         self.sections['VAR_TYPE'] = 'VOLCURVE'
 
-        self.sections["FITTING_CURVE_TENOR"] = tenor
-        self.sections["FITTING_CURVE_VALUE"] = value
-        self.sections["FITTING_CURVE_INTERPOLATION"] = "LINEAR"
-        self.sections['SHOCK:PARALLELMULTIPLEUP:MULTIPLE'] = value * 1.1
-        self.sections['SHOCK:PARALLELMULTIPLEDOWN:MULTIPLE'] = value * 0.9
-        self.sections['SHOCK:PARALLELADDUP:ADD'] = value + 0.01
-        self.sections['SHOCK:PARALLELADDDOWN:ADD'] = value - 0.01
+    def add_shockdef(self, shock_item):
+        nm_str = 'SHOCK_DEF' + ':' + shock_item.name.upper() + ':' + shock_item.type.upper()
+        if shock_item.type == 'add' or shock_item.type == 'mul' or shock_item.type == 'custom':
+            self.sections[nm_str] = shock_item.value
+        else:
+            raise Exception('unknown shock_item type')
+
+    def pre_build(self):
+        self.sections['REF_CURVE_INTERPOLATION'] = self.interpolation.value
+        self.sections['REF_CURVE_EXTRAPOLATION'] = self.extrapolation.value
+        self.sections["REF_CURVE_TENOR"] = self.tenor
+        self.sections["REF_CURVE_VALUE"] = self.value
 
 
 class ProcessModel(Tag):
@@ -425,5 +525,38 @@ class ProcessModel(Tag):
             self.sections[name] = v.value
             self.sections[name + '_REF'] = v.var_name
             self.sections[name + '_REF_USING'] = True
+
         else:
             self.sections[name] = v
+
+    def pre_build_yieldcurve(self, name, v):
+        if isinstance(v, YieldCurveVariable):
+            v.ref = v.var_name
+            v.ref_using = True
+
+            self.sections[name + '_CURVE_REF'] = v.var_name
+            self.sections[name + '_CURVE_REF_USING'] = True
+            #self.sections.update(v.make_sections('REF'))
+        elif isinstance(v, float):
+            c = YieldCurve()
+            c.tenor = ['100Y']
+            c.value = [v]
+            self.sections.update(c.make_sections(name))
+        else: # yieldcurve value형태 인경우
+            self.sections.update(v.make_sections(name))
+
+    def pre_build_volcurve(self, name, v):
+        if isinstance(v, VolCurveVariable):
+            v.ref = v.var_name
+            v.ref_using = True
+
+            self.sections[name + '_CURVE_REF'] = v.var_name
+            self.sections[name + '_CURVE_REF_USING'] = True
+            #self.sections.update(v.make_sections('REF'))
+        elif isinstance(v, float):
+            c = VolCurve()
+            c.tenor = ['100Y']
+            c.value = [v]
+            self.sections.update(c.make_sections(name))
+        else: # volcurve value형태 인경우
+            self.sections.update(v.make_sections(name))

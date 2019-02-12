@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import os
 import datetime
-#import xenarix as xen
 import common as cm
 from collections import namedtuple
 
@@ -313,10 +312,12 @@ class ResultObj:
         for index, row in self.result_data_info.iterrows():
             # if debug 가 아니면 넣기...?
             rm = ResultModel(row, self.timegrid)
-            key = str(row['REF_INDEX_CD']) + '_' + str(row['CALCULATION']) + '_' + str(row['SHOCK_NAME'])
+            ref_index_cd = str(row['REF_INDEX_CD'])
+            calculation = 'VALUE' if str(row['CALCULATION']) == 'nan' else str(row['CALCULATION'])
+            shock_name = str(row['SHOCK_NAME'])
+            key = ref_index_cd + '_' + calculation + '_' + shock_name
             self.models[str.upper(key)] = rm
             # self.names.append(rm.name)
-
 
 
     # scen_count = 0 to scen_num - 1
