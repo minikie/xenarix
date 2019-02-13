@@ -203,13 +203,15 @@ class ResultModel:
         # STATUS
         # DESCRIPTION
         # FILEPATH
-        self.name = result_data_info_row['REF_INDEX_CD']
+        self.name = cm.result_model_key(result_data_info_row)
+
+        self.index_name = result_data_info_row['REF_INDEX_CD']
+        self.shock_name = result_data_info_row['SHOCK_NAME']
         self.filepath = result_data_info_row['FILEPATH']
         self.scenario_num = result_data_info_row['SCENARIO_NUM']
         self.t_count = result_data_info_row['T_COUNT']
         self.calc_name = result_data_info_row['CALCULATION']
         self.calc_type = result_data_info_row['CALC_TYPE']
-
         self.timegrid = timegrid
         self.info = result_data_info_row
 
@@ -392,7 +394,8 @@ def resultModel_list(set_name, scen_name, result_name):
     # for model_name, shock_nm, calculation, filepath, calc_type in zip(result_data_info['REF_INDEX_CD'], result_data_info['SHOCK_NAME'], result_data_info['CALCULATION'], result_data_info['FILEPATH'], result_data_info['CALC_TYPE']):
     #     result_arr[str(model_name) + '_' + str(shock_nm) + '_' + str(calculation)] = ResultObj(filepath, calc_type)
     for index, row in result_data_info.iterrows():
-        result_arr[str(row['REF_INDEX_CD']) + '_' + str(row['SHOCK_NAME']) + '_' + str(row['CALCULATION'])] = ResultModel(row)
+        result_arr[cm.result_model_key(row)] = ResultModel(row)
+        #result_arr[str(row['REF_INDEX_CD']) + '_' + str(row['SHOCK_NAME']) + '_' + str(row['CALCULATION'])] = ResultModel(row)
 
     return result_arr
 

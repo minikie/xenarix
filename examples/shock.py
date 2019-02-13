@@ -1,6 +1,7 @@
 import xenarix as xen
 import xenarix.sample as xen_s
 import xenarix.results as xen_r
+import xenarix.viewer as xen_v
 
 xen.set_repository('c:\\xenarix')
 
@@ -44,7 +45,7 @@ scen1.refresh_corr()
 # value variable shock
 #shock1 = xen.VariableShock('shock1')
 # shock_variable : target,
-#shock1.add_shock_item(target_variable=kospi2_v, type='add', value=10)
+#shock1.add_shock_item(target_variable=kospi2_v, type='add', value=-10)
 #shock1.add_shock_item(target_variable=kospi2_v, type='mul', value=1.1)
 #shock1.add_shock_item(target_variable=kospi2_v, type='custom', value=255)
 
@@ -53,8 +54,8 @@ scen1.refresh_corr()
 # curve variable shock
 shock2 = xen.VariableShock('shock2')
 # shock_variable : target,
-shock2.add_shock_item(target_variable=irskrw, type='add', value=0.01)
-#shock2.add_shock_item(target_variable=irskrw, type='add', value=[0.01, 0.01])
+#shock2.add_shock_item(target_variable=irskrw, type='add', value=0.01)
+shock2.add_shock_item(target_variable=irskrw, type='add', value=[0.01, 0.01])
 #shock2.add_shock_item(target_variable=irskrw, type='mul', value=1.1)
 #shock2.add_shock_item(target_variable=irskrw, type='custom', value=[0.01])
 
@@ -69,4 +70,7 @@ res = xen_r.ResultObj(set_name, scen_id, result_id)
 
 print res.models['KOSPI200_VALUE_BASE'].x0()
 print res.models['KOSPI200_VALUE_SHOCK2'].x0()
+
+xen_v.plot_all_seperate(res)
+
 #print res.models['KOSPI200_VALUE_SHOCK2'].x0()

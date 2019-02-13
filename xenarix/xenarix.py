@@ -229,12 +229,6 @@ def get_model(tag):
         return GBM(model_name).load_tag(tag)
     elif model_type == "GBM_LOCALVOL":
         return GBMLocalVol(model_name).load_tag(tag)
-    elif model_type == "CEV_CONST":
-        return CEVConst(model_name).load_tag(tag)
-    elif model_type == "CEV":
-        return CEV(model_name).load_tag(tag)
-    elif model_type == "CEV_LOCALVOL":
-        return CEVLocalVol(model_name).load_tag(tag)
     elif model_type == "HESTON":
         return HESTON(model_name).load_tag(tag)
     elif model_type == "GARMANKOHLHAGEN":

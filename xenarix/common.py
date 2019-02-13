@@ -11,6 +11,11 @@ xen_bin_dir = None
 
 error_bound = 1.0e-10
 
+
+def result_model_key(row):
+    return str(row['REF_INDEX_CD']) + '_' + str(row['SHOCK_NAME']) + '_' + str(row['CALCULATION'])
+
+
 def is_equal(x, y):
     if x-y < error_bound:
         return True
