@@ -83,18 +83,33 @@ def main():
 
     # plt.plot(ts_log_diff)
     #
-    arima_order = (1, 1, 2)
-    arima_seasonal_order = (1, 0, 1, 12)
+    arima_order = (1, 1,1)
+    arima_seasonal_order = (2, 0, 1, 12)
     model = SARIMAX(ts_log, order=arima_order, seasonal_order=arima_seasonal_order)
     #model = ARIMA(ts_log, order=arima_order)
     results_ARIMA = model.fit(disp=-1)
     print results_ARIMA.summary()
     #print results_ARIMA.predict(dynamic= True)
     plt.plot(ts_log)
-    print results_ARIMA.fittedvalues
-    plt.plot(results_ARIMA.fittedvalues[1:], color='red')
-    plt.title('RSS: %.4f'% sum((results_ARIMA.fittedvalues-ts_log_diff)**2))
+    forecast_res = results_ARIMA.forecast(120)
+    print forecast_res
+    plt.plot(forecast_res, color='red')
+    # print results_ARIMA.fittedvalues
+    # plt.plot(results_ARIMA.fittedvalues[1:], color='red')
+    # plt.title('RSS: %.4f'% sum((results_ARIMA.fittedvalues-ts_log_diff)**2))
     plt.show()
+
+
+def main2():
+    ts = get_data()
+    # test_stationarity(ts)
+    # plt.plot(ts)
+    # plt.show()
+
+    ts_log = np.log(ts)
+    ts_log_diff = ts_log - ts_log.shift()
+
+    test_decompose(ts_log)
 
 
 def predict_test(scale):

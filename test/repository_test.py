@@ -27,7 +27,7 @@ print res.timegrid.next_t_row(t_row)
 #for i in range(0,100):
     #print res.models['TEST_GBM_NAN_BASE'].interpolated_value(i, t_row) - res.models['TEST_GBM_NAN_BASE'].interpolated_value2(i, t_row)
 
-print res.models['TEST_GBM_NAN_BASE'].interpolated_value(10, t_row)
+print res.models['TEST_GBM_NAN_BASE'].interpolated_value(t_row, 10)
 # print res.models['TEST_GBM_NAN_BASE'].interpolated_values(t_row)
 
 print(res.models['TEST_GBM_NAN_BASE'].x0())

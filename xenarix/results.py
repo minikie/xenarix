@@ -226,7 +226,7 @@ class ResultModel:
         return np.average(self.data, axis=0)
 
     # return value selected scenario_count
-    def interpolated_value(self, scenario_count, t_row):
+    def interpolated_value(self, t_row, scenario_count = 0):
         return np.interp(t_row.T, self.timegrid.data['T'], self.data[scenario_count,:])
 
     def interpolated_values(self, t_row):
@@ -284,6 +284,17 @@ class ResultModel:
     #         y = y0 + (t_row.DT) * (y1 - y0) / (next_t_row.DT)
     #
     #         return y
+
+
+class TimeSeriesResultModel:
+    def __init__(self, timeseries, timegrid):
+        self.timegrid = timegrid
+        self.timeseries = timeseries
+
+        # return value selected scenario_count
+    def interpolated_value(self, t_row, scenario_count = 0):
+        return np.interp(t_row.T, self.timegrid.data['T'], self.data[scenario_count,:])
+
 
 
 class ResultObj:
