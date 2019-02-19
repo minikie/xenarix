@@ -4,8 +4,9 @@ import os
 from collections import OrderedDict
 import datetime
 from calculations import *
-import results as xen_r
+from collections import namedtuple
 
+Corr_Item = namedtuple('Corr_Item', 'FIRST SECOND CORR')
 
 class General(Tag):
     def __init__(self):
@@ -187,15 +188,35 @@ class Correlation(Tag):
         Tag.__init__(self, "CORRELATION")
         # self.corr_matrix = np.identity(dim)
 
-        self.sections["CORR_LIST"] = []
-        self.sections["CORR_MATRIX"] = [[1.0]]
+        self.corr_items = [] # Corr_Item list
+        self.corr_nm_list = []
+        self.corr_matrix =  [[1.0]]
+
 
     def add_model(self, model):
         model.factor()
         # self.corr_matrix = np.identity(dim)
 
+    def add_corr_item(self, corr_item):
+        for c in self.corr_items:
+            if c.FIRST == corr_item.FIRST and c.SECOND == corr_item.SECOND:
+                c.CORR = corr_item.CORR
+                return
+
+        self.corr_items.append(corr_item)
+
     def set_identity(self, dim):
-        self.sections['CORR_MATRIX'] = np.identity(dim)
+        self.corr_matrix = np.identity(dim)
+
+    def pre_build(self):
+        for c in self.corr_items:
+            first_index = self.corr_nm_list.index(c.FIRST.upper())
+            second_index = self.corr_nm_list.index(c.SECOND.upper())
+            self.corr_matrix[first_index][second_index] = c.CORR
+            self.corr_matrix[second_index][first_index] = c.CORR
+
+        self.sections["CORR_LIST"] = self.corr_nm_list
+        self.sections["CORR_MATRIX"] = self.corr_matrix
 
 
 # process model factory
@@ -233,6 +254,10 @@ def get_model(tag):
         return HESTON(model_name).load_tag(tag)
     elif model_type == "GARMANKOHLHAGEN":
         return GarmanKohlhagen(model_name).load_tag(tag)
+    elif model_type == "RANDOM":
+        return RandomProcessModel(model_name).load_tag(tag)
+    elif model_type == "BROWNIANMOTION":
+        return BrownianMotion(model_name).load_tag(tag)
     else:
         return UnknownModel(model_name, model_type)
 
@@ -305,7 +330,6 @@ class ParaCurve:
         d['PARA_' + para_name + "_CURVE_INTERPOLATION"] = self.interpolation.value
 
         return d
-
 
 
 class HullWhite1F(Ir1FModel):
@@ -455,7 +479,7 @@ class CIR1F(Ir1FModel):
 class CIR1FExt(Ir1FModel):
     def __init__(self, model_name):
         Ir1FModel.__init__(self, model_name, "CIR1FEXT")
-        self.fitting_curve = YieldCurve(self)
+        self.fitting_curve = YieldCurve()
 
         self.r0 = 0.03
         self.alpha = 0.1
@@ -698,6 +722,21 @@ class GarmanKohlhagen(Eq1FModel):
         self.pre_build_volcurve('SIGMA', self.sigma_curve)
 
 
+class BrownianMotion(Eq1FModel):
+    def __init__(self, model_name, **arg):
+        Eq1FModel.__init__(self, model_name, "BROWNIANMOTION")
+
+        self.sigma = 1.0
+
+    def pre_build(self):
+        self.sections['SIGMA'] = self.sigma
+
+
+class RandomProcessModel(Eq1FModel):
+    def __init__(self, model_name, **arg):
+        Eq1FModel.__init__(self, model_name, "RANDOM")
+
+
 class CalibrationTool(Tag):
     def __init__(self, tool_name):
         Tag.__init__(self, 'CALIBRATIONTOOL')
@@ -874,6 +913,7 @@ class Scenario:
         # self.general.sections["SCENARIO_ID"] = scen_id
         # self.general.sections["RESULT_ID"] = result_id
 
+        self.owner_set_name = None
         self.general.scenario_id = scen_id
         self.general.result_id = result_id
 
@@ -990,8 +1030,30 @@ class Scenario:
 
     def refresh_corr(self):
         dim = sum([m.factor() for m in self.models.values()])
-        self.correlation.sections['CORR_LIST'] = [nm.upper() for nm in self.models.keys()]
+        self.correlation.corr_nm_list = [nm.upper() for nm in self.models.keys()]
         self.correlation.set_identity(dim)
+
+    def set_corr(self, first_model, second_model, corr):
+        if not (-1.0 < corr < 1.0):
+            raise Exception('correlation must be in (-1.0 , 1.0)')
+
+        first_nm = ''
+        if isinstance(first_model, ProcessModel):
+            first_nm = first_model.model_name
+
+        if isinstance(first_model, str):
+            first_nm = first_model
+
+        second_nm = ''
+        if isinstance(second_model, ProcessModel):
+            second_nm = second_model.model_name
+
+        if isinstance(second_model, str):
+            second_nm = second_model
+
+        c = Corr_Item(first_nm, second_nm, corr)
+
+        self.correlation.add_corr_item(c)
 
     def build(self):
         self.contents = ""
@@ -1005,7 +1067,7 @@ class Scenario:
 
         PROCESSMODELNAME_LIST = []
         for model in self.models.values():
-            PROCESSMODELNAME_LIST.append(model.model_name)
+            PROCESSMODELNAME_LIST.append(model.model_name.upper())
 
         self.general.sections["PROCESSMODELNAME_LIST"] = PROCESSMODELNAME_LIST
 
@@ -1076,6 +1138,41 @@ class Scenario:
         self.build()
         timestamp_str = datetime.datetime.today().strftime('%Y%m%d%H%M%S')
         filename = scen_id + '_' + timestamp_str + xen_extension
+        f = open(xen_input_temp_dir() + '\\' + filename, 'w')
+        f.write(self.contents)
+        f.close()
+
+        return filename
+
+    def generate_test(self, scen_set_nm):
+        #scen_set_nm = 'defaultsetname'
+
+        scen_id = self.general.scenario_id
+        result_id = self.general.result_id
+
+        self.set_shock_variables()
+        self.set_calculations()
+        self.check_error()
+
+        temp_filename = self.save_test(scen_id)
+
+        # --setname=debug --scenario_file_temp --scenariofilename=lastgen.xen
+        arg_str = ['--gen',
+                   '--repo={}'.format(get_repository()),
+                   '--setname={}'.format(scen_set_nm),
+                   '--file={}'.format(temp_filename)]
+
+        #run_command = xen_bin_dir + '\\' + exe_nm + ' ' + ' '.join(arg_str)
+        #run_command = '.\\' + exe_nm + ' ' + ' '.join(arg_str)
+        run_command = engine_path + ' ' + ' '.join(arg_str)
+        print(run_command)
+        res = os.system(run_command)
+
+        print(res)
+
+    def save_test(self, scen_id):
+        self.build()
+        filename = scen_id + '_test' + xen_extension
         f = open(xen_input_temp_dir() + '\\' + filename, 'w')
         f.write(self.contents)
         f.close()
@@ -1169,11 +1266,15 @@ class Scenario:
 
     def check_error(self):
         # correlation
-        corr_dim = len(self.correlation.sections["CORR_MATRIX"])
+        corr_dim = len(self.correlation.corr_matrix)
         process_dim = sum([m.factor() for m in self.models.values()])
 
         if corr_dim != process_dim:
             raise Exception('warning - correlation dim : ' + str(corr_dim) + ' , process num : ' + str(process_dim))
+
+    def dump(self):
+        self.build()
+        return self.contents
 
 
 class ScenarioSet:
@@ -1182,11 +1283,20 @@ class ScenarioSet:
         self.scenario_list = []
 
     def add_scenario(self, scenario):
+        scenario.owner_set_name = self.set_name
         self.scenario_list.append(scenario)
 
     def generate(self):
+        if len(self.scenario_list) == 0:
+            raise Exception('scenario list is empty')
         for scen in self.scenario_list:
             scen.generate(self.set_name)
+
+    def generate_test(self):
+        if len(self.scenario_list) == 0:
+            raise Exception('scenario list is empty')
+        for scen in self.scenario_list:
+            scen.generate_test(self.set_name)
 
     def save(self):
         self.save_as(self.set_name)

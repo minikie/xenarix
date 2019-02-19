@@ -18,7 +18,6 @@ scen1.general.maxyear = 5
 # make variable
 kospi2_v = xen.ValueVariable('kospi2_v', 259)
 
-
 scen1.add_variable(kospi2_v)
 
 irskrw = xen.YieldCurveVariable('irskrw')
@@ -64,13 +63,13 @@ shock2.add_shock_item(target_variable=kospi2_imvol, type='add', value=0.05)
 scen1.add_shock(shock2)
 
 scenSet.add_scenario(scen1)
-scenSet.generate()
+scenSet.generate_test()
 
 res = xen_r.ResultObj(set_name, scen_id, result_id)
 
 print res.models['KOSPI200_VALUE_BASE'].x0()
 print res.models['KOSPI200_VALUE_SHOCK2'].x0()
 
-xen_v.plot_all_seperate(res)
+xen_v.plot_all(res)
 
 #print res.models['KOSPI200_VALUE_SHOCK2'].x0()
