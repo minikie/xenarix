@@ -262,7 +262,7 @@ class Tag:
                 if len(v) == 1:
                     line.append(k + '=' + str(v[0]).upper() + '|;')
                 else:
-                    line.append(k + '=' + '|'.join(str(a) for a in v) + ';')
+                    line.append(k + '=' + '|'.join(str(a).upper() for a in v) + ';')
             else:
                 line.append(k + '=' + str(v).upper() + ';')
 
@@ -470,6 +470,17 @@ class VolCurveVariable(Variable):
         self.sections['REF_CURVE_EXTRAPOLATION'] = self.extrapolation.value
         self.sections["REF_CURVE_TENOR"] = self.tenor
         self.sections["REF_CURVE_VALUE"] = self.value
+
+
+class CalibrationProcessModel:
+    def __init__(self):
+        pass
+
+    def set_cali_parameter_fix(self, **args):
+        pass
+
+    def set_cali_parameter_maturity(self, **args):
+        pass
 
 
 class ProcessModel(Tag):

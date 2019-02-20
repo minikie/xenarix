@@ -88,9 +88,9 @@ def g2ext(process_name):
     return model
 
 
-def hw1f(process_name):
+def hw1f(model_name):
 
-    model = xen.HullWhite1F(process_name)
+    model = xen.HullWhite1F(model_name)
 
     #model.fitting_curve.tenor = ['3M', '6M', '9M', '12M', '24M', '36M', '48M', '60M', '120M', '180M']
     #model.fitting_curve.value = [0.0164, 0.0161, 0.0159, 0.0164, 0.0173, 0.0182, 0.0191, 0.0218, 0.0229, 0.0229]
@@ -103,8 +103,8 @@ def hw1f(process_name):
     model.sigma_curve.tenor = ['12M', '24M', '36M']
     model.sigma_curve.value = [0.01, 0.01, 0.01]
 
-    model.sections["PARA_ALPHA_FIXES"] = [False]
-    model.sections["PARA_SIGMA_FIXES"] = [False, False, False]
+    model.alpha_fixes = [False]
+    model.sigma_fixes = [False, False, False]
 
     return model
 

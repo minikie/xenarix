@@ -96,6 +96,11 @@ print (modelpath)  # ndarray : shape(scenarioNum, t_count)
 
 ```
 
+Result Viwer
+-----------
+You can download Result Viewr [XenResultViwer](http://www.montrix.co.kr)
+
+
 License
 -------
 

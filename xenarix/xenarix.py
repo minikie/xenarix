@@ -31,8 +31,6 @@ class General(Tag):
         self.thread_num = 1
 
     def pre_build(self):
-        d = OrderedDict()
-
         self.sections["SCENARIO_ID"] = self.scenario_id
         self.sections["REFERENCE_DATE"] = self.reference_date
         self.sections["SCENARIO_NUM"] = self.scenario_num
@@ -51,23 +49,6 @@ class General(Tag):
         self.sections["BASE_CURRENCY"] = self.base_currency
         self.sections["THREADNUM"] = self.thread_num
 
-
-        return d
-
-
-class CalibrationGeneral(Tag):
-    def __init__(self):
-        Tag.__init__(self, "CALIBRATIONGENERAL")
-
-        self.sections["CALIBRATION_ID"] = "TESTCALIID1"
-        self.sections["RESULT_ID"] = "TESTRESULTID1"
-        self.sections["REFERENCE_DATE"] = "20150902"
-        self.sections["SCENARIO_NUM"] = 30
-        self.sections["DELIMITER"] = "SPACE"
-        self.sections["MAXYEAR"] = 30
-        self.sections["N_PERYEAR"] = 52
-        self.sections["RND_TYPE"] = "DEFAULT"
-        self.sections["RND_SEED"] = 1
 
 
 class ShockItem:
@@ -332,17 +313,22 @@ class ParaCurve:
         return d
 
 
-class HullWhite1F(Ir1FModel):
+class HullWhite1F(Ir1FModel, CalibrationProcessModel):
     def __init__(self, model_name):
         Ir1FModel.__init__(self, model_name, "HULLWHITE1F")
         self.fitting_curve = YieldCurve()
         self.alpha_curve = ParaCurve()
         self.sigma_curve = ParaCurve()
+        self.alpha_fixes = []
+        self.sigma_fixes = []
 
     def pre_build(self):
         self.sections.update(self.fitting_curve.make_sections('FITTING'))
         self.sections.update(self.alpha_curve.make_sections('ALPHA'))
         self.sections.update(self.sigma_curve.make_sections('SIGMA'))
+
+        self.sections["PARA_ALPHA_FIXES"] = self.alpha_fixes
+        self.sections["PARA_SIGMA_FIXES"] = self.sigma_fixes
 
     def underlying_key(self):
         return 'FITTING_CURVE_VALUE'
@@ -354,6 +340,16 @@ class HullWhite1F(Ir1FModel):
             v = [value] * len(self.sections['FITTING_CURVE_VALUE'])
 
         return v
+
+    def set_cali_parameter_fix(self, **args):
+        # alpha
+        for k, v in args.items():
+            if k.upper() == 'ALPHA':
+                self.alpha_fixes = [v] * len(self.alpha_curve.tenor)
+            elif k.upper() == 'SIGMA':
+                self.sigma_fixes = [v] * len(self.sigma_curve.tenor)
+            else:
+                raise Exception('unknown parameter ' + k)
 
 
 # brigo 93p : humped vol model
@@ -726,9 +722,13 @@ class BrownianMotion(Eq1FModel):
     def __init__(self, model_name, **arg):
         Eq1FModel.__init__(self, model_name, "BROWNIANMOTION")
 
+        self.x0 = 1.0
+        self.drift = 1.0
         self.sigma = 1.0
 
     def pre_build(self):
+        self.sections['X0'] = self.x0
+        self.sections['DRIFT'] = self.drift
         self.sections['SIGMA'] = self.sigma
 
 
@@ -737,170 +737,7 @@ class RandomProcessModel(Eq1FModel):
         Eq1FModel.__init__(self, model_name, "RANDOM")
 
 
-class CalibrationTool(Tag):
-    def __init__(self, tool_name):
-        Tag.__init__(self, 'CALIBRATIONTOOL')
-        self.sections['NAME'] = tool_name
-        self.tool_name = tool_name
-        self.tool_type = ''
 
-
-class CapTool(CalibrationTool):
-    def __init__(self, tool_name, **kwargs):
-        CalibrationTool.__init__(self, tool_name)
-
-        self.sections['CALIBRATION_TOOL_TYPE'] = 'CAP'
-
-        self.sections['DISCOUNT_CURVE_VALUE'] = [0.03, 0.031, 0.032, 0.033]
-        self.sections['DISCOUNT_CURVE_TENOR'] = ['1Y', '2Y', '3Y', '4Y']
-        self.sections['DISCOUNT_CURVE_INTERPOLATION'] = 'MONOTONICCUBICNATURALSPLINE'
-
-        self.sections['CAP_VOL_CURVE_VALUE'] = [0.3, 0.31, 0.32, 0.33]
-        self.sections['CAP_VOL_CURVE_TENOR'] = ['3M', '6M', '9M', '12M']
-
-        self.sections['CAP_VOL_CURVE_STRIKE'] = [0.03, 0.03, 0.03, 0.03]
-
-        self.sections['REF_INDEX'] = 'CD91'
-
-        self.set_sections(**kwargs)
-
-
-class SwaptionTool(CalibrationTool):
-    def __init__(self, tool_name, **kwargs):
-        CalibrationTool.__init__(self, tool_name)
-
-        self.sections['CALIBRATION_TOOL_TYPE'] = 'SWAPTION'
-
-        self.sections['DISCOUNT_CURVE_VALUE'] = [0.03, 0.031, 0.032, 0.033]
-        self.sections['DISCOUNT_CURVE_TENOR'] = ['3M', '6M', '9M', '12M']
-        self.sections['DISCOUNT_CURVE_INTERPOLATION'] = 'MONOTONICCUBICNATURALSPLINE'
-
-        self.sections['SWAPTION_VOL_SURFACE_VALUE'] = [0.03, 0.031, 0.032, 0.033]
-        self.sections['SWAPTION_VOL_SURFACE_EXPIRY'] = ['3M', '6M', '9M', '12M', ]
-        self.sections['SWAPTION_VOL_SURFACE_STRIKE'] = [0.03, 0.03, 0.03, 0.03]
-        self.sections['SWAP_MATURITY'] = '1Y'
-        self.sections['REF_INDEX'] = 'CD91'
-
-        self.set_sections(**kwargs)
-
-
-class UnknownCalibrationTool(CalibrationTool):
-    pass
-
-
-def get_calibrationtool(tag):
-    isinstance(tag, Tag)
-    # if tag.tag_name != '':
-    #     return None
-
-    tool_type = tag.sections['CALIBRATION_TOOL_TYPE']
-    tool_name = tag.sections['NAME']
-
-    if tool_type == "CAP":
-        return CapTool(tool_name).load_tag(tag)
-    elif tool_type == "SWAPTION":
-        return SwaptionTool(tool_name).load_tag(tag)
-    else:
-        return UnknownCalibrationTool(tool_name)
-
-
-# global method
-# def get_calibrator(cali_id):
-#     cali = Calibrator()
-#     cali.load(cali_id)
-#
-#     return scen
-
-
-class Calibrator:
-    def __init__(self):
-        self.contents = ''
-        self.calibration_enviroment_category = Category('CALIBRATIONENVIROMENT')
-        self.calibrationinfo_category = Category('CALIBRATIONINFO')
-
-        self.general = CalibrationGeneral()
-        self.calibrationtools = OrderedDict()
-        self.model = None
-
-    def save_as(self, new_id):
-        self.general.sections['CALIBRATION_ID'] = new_id
-        self.build()
-        f = open(xen_cali_input_dir() + '\\' + new_id + xen_extension, 'w')
-        f.write(self.contents)
-        f.close()
-
-    def load(self, id):
-        fpath = xen_cali_input_dir() + '\\' + id + xen_extension
-        if not os.path.exists(fpath):
-            raise IOError()
-
-        f = open(fpath, 'r')
-
-        contents = f.read()
-
-        self.load_contents(contents)
-
-    def load_contents(self, contents):
-
-        self.contents = contents
-
-        # dom 을 만듬
-        inputParser = InputParser(self.contents)
-        # dom 에서 generalenv 을 가져옴
-
-        for env_tag in inputParser['GENERATIONENVIROMENT'].tags:
-            if env_tag.tag_name == 'GENERAL':
-                self.general.load_tag(env_tag)
-
-        # for 문을 돌려서 TOOL FACTORY로 정보를 계속 박음
-        for cali_tag in inputParser['CALIBRATIONINFO'].tags:
-            if cali_tag.tag_name == 'CALIBRATIONTOOL':
-                tool = get_calibrationtool(cali_tag)
-                if isinstance(tool, UnknownCalibrationTool):
-                    raise Exception('unknown model type : {}'.format(tool.tool_type))
-                if tool.tool_name not in self.calibrationtools:
-                    self.calibrationtools[tool.tool_name] = tool
-                elif tool.tool_name in self.calibrationtools:
-                    raise Exception('duplicated model name : {}'.format(tool.tool_name))
-            elif cali_tag.tag_name == 'PROCESS':
-                model = get_model(cali_tag)
-                if isinstance(model, UnknownModel):
-                    raise Exception('unknown model type : {}'.format(model.model_type))
-                self.model = model
-
-    def calibrate(self, cali_id=None, result_id=None):
-        if cali_id is None:
-            cali_id = self.general.sections['CALIBRATION_ID']
-        self.general.sections['CALIBRATION_ID'] = cali_id.upper()
-
-        if result_id is None:
-            result_id = self.general.sections['RESULT_ID']
-        self.general.sections['RESULT_ID'] = result_id.upper()
-
-        self.save_as(cali_id)
-
-        exe_nm = 'scenarioGeneratorExe.exe'
-        arg_str = ['--calibrate_file', '--calibratefilename={}'.format(cali_id) + cali_extension]
-
-        res = os.system(xen_bin_dir + '\\' + exe_nm + ' ' + ' '.join(arg_str))
-
-        print(res)
-
-    def build(self):
-        self.contents = ""
-
-        del self.calibration_enviroment_category.tags[:]
-        del self.calibrationinfo_category.tags[:]
-
-        self.calibration_enviroment_category.tags.append(self.general)
-
-        self.calibrationinfo_category.tags.append(self.model)
-
-        for tool in self.calibrationtools.values():
-            self.calibrationinfo_category.tags.append(tool)
-
-        self.contents = self.calibration_enviroment_category.build() \
-                      + self.calibrationinfo_category.build()
 
 
 class Scenario:

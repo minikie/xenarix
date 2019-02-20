@@ -6,6 +6,7 @@ import xenarix.viewer as xen_v
 
 def get_test_model(process_name):
     model = xen.BrownianMotion(process_name)
+
     model.sigma = 0.5
 
     return model
@@ -13,7 +14,7 @@ def get_test_model(process_name):
 
 def do_test():
     scenSet = xen.ScenarioSet('set1')
-    model = get_test_model('rnd_model')
+    model = get_test_model('bm_model')
     scen1 = xen.Scenario('scen1', 'testResult')
     scen1.add_model(model)
 

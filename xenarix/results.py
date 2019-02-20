@@ -440,3 +440,13 @@ def xeResultAggregate(result_obj_list, scen_num):
 
     return np.array(arr)
 
+
+class CaliResultObj:
+    def __init__(self, cali_name, model_name, result_name):
+        self.cali_name = cali_name
+        self.model_name = model_name
+        self.result_name = result_name
+
+
+
+
