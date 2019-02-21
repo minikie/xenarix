@@ -32,7 +32,7 @@ class CapTool(CalibrationTool):
         self.sections['CAP_VOL_VALUE'] = self.value
         self.sections['CAP_VOL_VALUE_TYPE'] = self.value_type
 
-        self.sections['REF_INDEX'] = 'CD91'
+        self.sections['REF_INDEX'] = 'IRSKRW'
 
 
 class SwaptionTool(CalibrationTool):
@@ -58,7 +58,7 @@ class SwaptionTool(CalibrationTool):
         self.sections['SWAPTION_VOL_VALUE'] = self.value
         self.sections['SWAPTION_VOL_VALUE_TYPE'] = self.value_type
 
-        self.sections['REF_INDEX'] = 'CD91'
+        self.sections['REF_INDEX'] = 'IRSKRW'
 
 
 class UnknownCalibrationTool(CalibrationTool):

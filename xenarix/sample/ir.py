@@ -25,8 +25,8 @@ def bk1f(process_name):
     model.sigma_curve.tenor = ['12M', '24M', '36M']
     model.sigma_curve.value = [0.01, 0.01, 0.01]
 
-    model.sections["PARA_ALPHA_FIXES"] = [False]
-    model.sections["PARA_SIGMA_FIXES"] = [False, False, False]
+    model.sections["PARA_ALPHA_CURVE_FIXES"] = [False]
+    model.sections["PARA_SIGMA_CURVE_FIXES"] = [False, False, False]
 
     #model.add_calc(scen.Drift())
     #model.add_calc(scen.Diffusion())
@@ -103,7 +103,7 @@ def hw1f(model_name):
     model.sigma_curve.tenor = ['12M', '24M', '36M']
     model.sigma_curve.value = [0.01, 0.01, 0.01]
 
-    model.alpha_fixes = [False]
+    model.alpha_fixes = [True]
     model.sigma_fixes = [False, False, False]
 
     return model

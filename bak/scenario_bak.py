@@ -1421,7 +1421,7 @@
 
 #        self.sections['CAP_VOL_CURVE_STRIKE'] = [0.03, 0.03, 0.03, 0.03]
 
-#        self.sections['REF_INDEX'] = 'CD91'
+#        self.sections['REF_INDEX'] = 'IRSKRW'
 
 #        self.set_sections(**kwargs)
 
@@ -1440,7 +1440,7 @@
 #        self.sections['SWAPTION_VOL_SURFACE_EXPIRY'] = ['3M', '6M', '9M', '12M', ]
 #        self.sections['SWAPTION_VOL_SURFACE_STRIKE'] = [0.03, 0.03, 0.03, 0.03]
 #        self.sections['SWAP_MATURITY'] = '1Y'
-#        self.sections['REF_INDEX'] = 'CD91'
+#        self.sections['REF_INDEX'] = 'IRSKRW'
 
 #        self.set_sections(**kwargs)
 

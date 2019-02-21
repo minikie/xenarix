@@ -59,7 +59,7 @@ calires_obj = xen_r.CaliResultObj(cali_name='test_calibration',
                                model_name=hw1f_test.model_name,
                                result_name='test')
 
-
+print calires_obj.cali_result_data_info
 # cali_obj.model
 # cali_obj.error
 # cali_obj.params # dict?

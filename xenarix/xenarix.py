@@ -327,7 +327,7 @@ class HullWhite1F(Ir1FModel, CalibrationProcessModel):
         self.sections.update(self.alpha_curve.make_sections('ALPHA'))
         self.sections.update(self.sigma_curve.make_sections('SIGMA'))
 
-        self.sections["PARA_ALPHA_FIXES"] = self.alpha_fixes
+        self.sections["PARA_ALPHA_CURVE_FIXES"] = self.alpha_fixes
         self.sections["PARA_SIGMA_FIXES"] = self.sigma_fixes
 
     def underlying_key(self):
@@ -363,7 +363,7 @@ class MV1F(Ir1FModel):
         self.sections["PARA_SIGMA_TENOR"] = []
         self.sections["PARA_ALPHA_VALUE"] = []
         self.sections["PARA_SIGMA_VALUE"] = []
-        self.sections["PARA_ALPHA_FIXES"] = []
+        self.sections["PARA_ALPHA_CURVE_FIXES"] = []
         self.sections["PARA_SIGMA_FIXES"] = []
 
         # self.fitting_curve_tenor = self.sections["FITTING_CURVE_TENOR"]

@@ -22,7 +22,7 @@
 # calibration_tools['cap1'].sections['CAP_VOL_CURVE_VALUE'] = [0.155, 0.160, 0.158, 0.156]
 # calibration_tools['cap1'].sections['CAP_VOL_CURVE_TENOR'] = ['12M', '24M', '36M', '48M']
 # calibration_tools['cap1'].sections['CAP_VOL_CURVE_STRIKE'] = 0.03
-# calibration_tools['cap1'].sections['REF_INDEX'] = 'CD91'
+# calibration_tools['cap1'].sections['REF_INDEX'] = 'IRSKRW'
 #
 # #calibration_tools['cap2'] = scen.CapTool('cap2')
 # #calibration_tools['cap2'].sections['CAP_VOL_CURVE_VALUE'] = [0.32, 0.33, 0.34, 0.35]

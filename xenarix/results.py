@@ -8,6 +8,7 @@ from collections import namedtuple
 
 T_Row = namedtuple('T_Row', 'INDEX DATE T DT INTERPOLATED')
 
+
 def build_result_data_info2(set_name, scen_name, result_name):
     result_info_file_path = cm.xen_result_dir() + '/' + set_name + '/' + scen_name + '/' + result_name
 
@@ -17,6 +18,21 @@ def build_result_data_info2(set_name, scen_name, result_name):
 def build_result_data_info(result_info_file_path):
     if not os.path.exists(result_info_file_path):
         raise Exception("result info load error. file not exist.")
+
+    result_data_info = pd.read_csv(result_info_file_path + '/' + cm.resultinfo_filename, delimiter='|')
+
+    return result_data_info
+
+
+def build_cali_result_data_info2(cali_name, model_name, result_name):
+    result_info_file_path = cm.xen_cali_result_dir() + '/' + cali_name + '/' + model_name + '/' + result_name
+
+    return build_cali_result_data_info(result_info_file_path)
+
+
+def build_cali_result_data_info(result_info_file_path):
+    if not os.path.exists(result_info_file_path):
+        raise Exception("cali result info load error. file not exist.")
 
     result_data_info = pd.read_csv(result_info_file_path + '/' + cm.resultinfo_filename, delimiter='|')
 
@@ -447,6 +463,16 @@ class CaliResultObj:
         self.model_name = model_name
         self.result_name = result_name
 
+        self.cali_result_data_info = None
+
+        self.initialize()
+
+    def initialize(self):
+        self.cali_result_data_info = build_cali_result_data_info2(self.cali_name, self.model_name, self.result_name)
+
+        # timegrid
+        # self.timegrid = build_timegrid_info2(self.set_name, self.scen_name, self.result_name)
+        self.timegrid = TimeGrid(self.cali_name, self.model_name, self.result_name)
 
 
 
