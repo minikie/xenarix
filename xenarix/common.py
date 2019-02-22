@@ -74,9 +74,16 @@ xenset_extension = '.xens'
 engine_filename = 'xenarix_engine.exe'
 resultinfo_filename = 'RESULTINFO.TXT'
 timegridinfo_filename = 'TIMEGRIDINFO.TXT'
+cali_detailinfo_filename = 'DETAIL.TXT'
+cali_parametersinfo_filename = 'PARA.TXT'
+
 
 module_dir_info = imp.find_module('xenarix')
 engine_path = module_dir_info[1] + '\\' + engine_filename
+
+
+class CurveFamily(Enum):
+    IRSKRW = 'IRSKRW'
 
 
 class Interpolation(Enum):
@@ -316,6 +323,7 @@ class YieldCurve:
         self.value = []
         self.ref = None
         self.ref_using = False
+        self.familyname = CurveFamily.IRSKRW
         self.interpolation = Interpolation.Linear
         self.extrapolation = Extrapolation.FLAT
 
@@ -326,6 +334,7 @@ class YieldCurve:
         d[curve_name + "_CURVE_VALUE"] = self.value
         d[curve_name + "_CURVE_REF"] = 'NULL' if self.ref is None else self.ref
         d[curve_name + "_CURVE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
+        d[curve_name + "_CURVE_FAMILYNAME"] = self.familyname.value
         d[curve_name + "_CURVE_INTERPOLATION"] = self.interpolation.value
         d[curve_name + "_CURVE_EXTRAPOLATION"] = self.extrapolation.value
 

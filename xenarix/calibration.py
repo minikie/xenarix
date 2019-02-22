@@ -99,7 +99,7 @@ def make_swaptions(option_maturities,
 def make_swaptions_from_matrix(swap_maturities,
                                option_maturities,
                                values_matrix,
-                               level_strike=0.015,
+                               strike='atm',
                                value_type='black'):
     if len(values_matrix) == 0:
         raise Exception('values_matrix is empty')
@@ -114,12 +114,12 @@ def make_swaptions_from_matrix(swap_maturities,
 
     for i, sm in enumerate(swap_maturities):
         for j, om in enumerate(option_maturities):
-            tool_name = 'SWAPTION_' + om + '_' + sm + '_' + str(level_strike)
+            tool_name = 'SWAPTION_' + om + '_' + sm + '_' + str(strike).upper()
             swaption = SwaptionTool(tool_name)
 
             swaption.tenor = om
             swaption.swap_maturity = sm
-            swaption.strike = level_strike
+            swaption.strike = strike
             swaption.value = values_matrix[i][j]
 
             swaptions.append(swaption)

@@ -24,19 +24,38 @@ def build_result_data_info(result_info_file_path):
     return result_data_info
 
 
-def build_cali_result_data_info2(cali_name, model_name, result_name):
+def build_cali_result_detail_info2(cali_name, model_name, result_name):
     result_info_file_path = cm.xen_cali_result_dir() + '/' + cali_name + '/' + model_name + '/' + result_name
 
-    return build_cali_result_data_info(result_info_file_path)
+    return build_cali_result_detail_info(result_info_file_path)
 
 
-def build_cali_result_data_info(result_info_file_path):
+def build_cali_result_detail_info(result_info_file_path):
     if not os.path.exists(result_info_file_path):
-        raise Exception("cali result info load error. file not exist.")
+        raise Exception("cali result info load error. result does not exist : {0}".format(result_info_file_path))
 
-    result_data_info = pd.read_csv(result_info_file_path + '/' + cm.resultinfo_filename, delimiter='|')
+    filename = result_info_file_path + '/' + cm.cali_detailinfo_filename
+    if not os.path.exists(filename):
+        raise Exception("cali result datail file does not exist : {0}".format(filename))
 
-    return result_data_info
+    return pd.read_csv(filename, delimiter='|')
+
+
+def build_cali_result_parameters_info2(cali_name, model_name, result_name):
+    result_info_file_path = cm.xen_cali_result_dir() + '/' + cali_name + '/' + model_name + '/' + result_name
+
+    return build_cali_result_parameters_info(result_info_file_path)
+
+
+def build_cali_result_parameters_info(result_info_file_path):
+    if not os.path.exists(result_info_file_path):
+        raise Exception("cali result info load error. result does not exist : {0}".format(result_info_file_path))
+
+    filename = result_info_file_path + '/' + cm.cali_parametersinfo_filename
+    if not os.path.exists(filename):
+        raise Exception("cali result parameters file does not exist : {0}".format(filename))
+
+    return pd.read_csv(filename, delimiter='|')
 
 
 def build_timegrid_info2(set_name, scen_name, result_name):
@@ -463,16 +482,15 @@ class CaliResultObj:
         self.model_name = model_name
         self.result_name = result_name
 
-        self.cali_result_data_info = None
+        self.detail_info = None
+        self.parameters_info = None
 
         self.initialize()
 
     def initialize(self):
-        self.cali_result_data_info = build_cali_result_data_info2(self.cali_name, self.model_name, self.result_name)
+        self.detail_info = build_cali_result_detail_info2(self.cali_name, self.model_name, self.result_name)
+        self.parameters_info = build_cali_result_parameters_info2(self.cali_name, self.model_name, self.result_name)
 
-        # timegrid
-        # self.timegrid = build_timegrid_info2(self.set_name, self.scen_name, self.result_name)
-        self.timegrid = TimeGrid(self.cali_name, self.model_name, self.result_name)
 
 
 

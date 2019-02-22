@@ -100,11 +100,11 @@ def hw1f(model_name):
 
     model.alpha_curve.tenor = ['36M']
     model.alpha_curve.value = [0.1]
-    model.sigma_curve.tenor = ['12M', '24M', '36M']
-    model.sigma_curve.value = [0.01, 0.01, 0.01]
+    model.sigma_curve.tenor = ['1Y', '2Y', '3Y', '5Y', '7Y', '10Y']
+    model.sigma_curve.value = [0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
 
     model.alpha_fixes = [True]
-    model.sigma_fixes = [False, False, False]
+    model.sigma_fixes = [False, False, False, False, False, False]
 
     return model
 
