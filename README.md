@@ -4,6 +4,8 @@ Xenarix(Beta) : Economic Scenario Generator
 ![image](https://img.shields.io/badge/Platform-Windows-Green.svg)
 ![image](https://img.shields.io/pypi/pyversions/requests.svg)
 
+[KOR version](README-KOR.md)
+
 Xenarix is a economic scenario generator(ESG) for financial analysis. Now is Beta Release version and Support only for Windows.
 
 Feature Support
