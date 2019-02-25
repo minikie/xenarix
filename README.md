@@ -4,7 +4,7 @@ Xenarix(Beta) : Economic Scenario Generator
 ![image](https://img.shields.io/badge/Platform-Windows-Green.svg)
 ![image](https://img.shields.io/pypi/pyversions/requests.svg)
 
-[KOR version](README-KOR.md)
+[한글 버전](README-KOR.md)
 
 Xenarix is a economic scenario generator(ESG) for financial analysis. Now is Beta Release version and Support only for Windows.
 
@@ -102,6 +102,8 @@ Result Viwer
 -----------
 You can download Result Viewr [XenResultViwer](https://github.com/minikie/xenarix/releases/latest)
 Download ResultViewer.Zip and Run Setup.exe 
+
+![ScreenShot](/img/resultviewer.png?raw=true)
 
 License
 -------

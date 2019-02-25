@@ -79,8 +79,8 @@ calires_obj = xen_r.CaliResultObj(cali_name='test_calibration',
                                model_name=hw1f_test.model_name,
                                result_name='test')
 
-for row in calires_obj.detail_info.iterrows():
-    print row
+# for row in calires_obj.detail_info.iterrows():
+#     print row
 
 print calires_obj.parameters_info.loc[16]
 # cali_obj.model

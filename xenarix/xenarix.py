@@ -308,7 +308,7 @@ class ParaCurve:
         d['PARA_' + para_name + "_CURVE_VALUE"] = self.value
         d['PARA_' + para_name + "_CURVE_REF"] = 'NULL' if self.ref is None else self.ref
         d['PARA_' + para_name + "_CURVE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
-        d['PARA_' + para_name + "_CURVE_INTERPOLATION"] = self.interpolation.value
+        d['PARA_' + para_name + "_CURVE_INTERPOLATION"] = self.interpolation
 
         return d
 

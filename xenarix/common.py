@@ -62,9 +62,19 @@ def check_directory(dir):
 def xen_input_dir(): return check_directory(get_repository() + "\\scen_input_file")
 def xen_input_temp_dir(): return check_directory(get_repository() + "\\scen_input_file\\temp")
 def xen_result_dir(): return check_directory(get_repository() + "\\scen_results")
+def xen_export_dir(): return check_directory(get_repository() + "\\export")
 
 def xen_cali_input_dir(): return check_directory(get_repository() + "\\cali_input_file")
 def xen_cali_result_dir(): return check_directory(get_repository() + "\\cali_results")
+
+
+def initialize_dir():
+    xen_input_dir()
+    xen_input_temp_dir()
+    xen_result_dir()
+    xen_export_dir()
+    xen_cali_input_dir()
+    xen_cali_result_dir()
 
 
 xen_extension = '.xen'
@@ -80,6 +90,7 @@ cali_parametersinfo_filename = 'PARA.TXT'
 
 module_dir_info = imp.find_module('xenarix')
 engine_path = module_dir_info[1] + '\\' + engine_filename
+
 
 
 class CurveFamily(Enum):
@@ -334,9 +345,9 @@ class YieldCurve:
         d[curve_name + "_CURVE_VALUE"] = self.value
         d[curve_name + "_CURVE_REF"] = 'NULL' if self.ref is None else self.ref
         d[curve_name + "_CURVE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
-        d[curve_name + "_CURVE_FAMILYNAME"] = self.familyname.value
-        d[curve_name + "_CURVE_INTERPOLATION"] = self.interpolation.value
-        d[curve_name + "_CURVE_EXTRAPOLATION"] = self.extrapolation.value
+        d[curve_name + "_CURVE_FAMILYNAME"] = self.familyname
+        d[curve_name + "_CURVE_INTERPOLATION"] = self.interpolation
+        d[curve_name + "_CURVE_EXTRAPOLATION"] = self.extrapolation
 
         return d
 
@@ -357,8 +368,8 @@ class VolCurve:
         d[curve_name + "_CURVE_VALUE"] = self.value
         d[curve_name + "_CURVE_REF"] = 'NULL' if self.ref is None else self.ref
         d[curve_name + "_CURVE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
-        d[curve_name + "_CURVE_INTERPOLATION"] = self.interpolation.value
-        d[curve_name + "_CURVE_EXTRAPOLATION"] = self.extrapolation.value
+        d[curve_name + "_CURVE_INTERPOLATION"] = self.interpolation
+        d[curve_name + "_CURVE_EXTRAPOLATION"] = self.extrapolation
 
         return d
 
@@ -382,8 +393,8 @@ class VolSurface:
         d[surface_name + "_SURFACE_MATRIX"] = self.matrix
         d[surface_name + "_SURFACE_REF"] = 'NULL' if self.ref is None else self.ref
         d[surface_name + "_SURFACE_REF_USING"] = 'FALSE' if self.ref_using else self.ref_using
-        d[surface_name + "_SURFACE_INTERPOLATION"] = self.interpolation.value
-        d[surface_name + "_SURFACE_EXTRAPOLATION"] = self.extrapolation.value
+        d[surface_name + "_SURFACE_INTERPOLATION"] = self.interpolation
+        d[surface_name + "_SURFACE_EXTRAPOLATION"] = self.extrapolation
 
         return d
 
@@ -450,8 +461,8 @@ class YieldCurveVariable(Variable):
             raise Exception('unknown shock_item type')
 
     def pre_build(self):
-        self.sections['REF_CURVE_INTERPOLATION'] = self.interpolation.value
-        self.sections['REF_CURVE_EXTRAPOLATION'] = self.extrapolation.value
+        self.sections['REF_CURVE_INTERPOLATION'] = self.interpolation
+        self.sections['REF_CURVE_EXTRAPOLATION'] = self.extrapolation
         self.sections["REF_CURVE_TENOR"] = self.tenor
         self.sections["REF_CURVE_VALUE"] = self.value
 
@@ -475,8 +486,8 @@ class VolCurveVariable(Variable):
             raise Exception('unknown shock_item type')
 
     def pre_build(self):
-        self.sections['REF_CURVE_INTERPOLATION'] = self.interpolation.value
-        self.sections['REF_CURVE_EXTRAPOLATION'] = self.extrapolation.value
+        self.sections['REF_CURVE_INTERPOLATION'] = self.interpolation
+        self.sections['REF_CURVE_EXTRAPOLATION'] = self.extrapolation
         self.sections["REF_CURVE_TENOR"] = self.tenor
         self.sections["REF_CURVE_VALUE"] = self.value
 

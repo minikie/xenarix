@@ -35,21 +35,21 @@ def plot_all_seperate(res):
 
 def plot_all(source, seperate=True):
     res = None
-    if isinstance(source , xen.ScenarioSet):
+    if isinstance(source, xen.ScenarioSet):
         for scen in source.scenario_list:
             res = xen_r.ResultObj(source.set_name, scen.get_scen_id(), scen.get_result_id())
-            if seperate:
-                plot_all_seperate(res)
-            else:
-                plot_all_merge(res)
-    elif isinstance(source , xen.Scenario):
+
+    elif isinstance(source, xen.Scenario):
         res = xen_r.ResultObj(source.owner_set_name, source.get_scen_id(), source.get_result_id())
-        if seperate:
-            plot_all_seperate(res)
-        else:
-            plot_all_merge(res)
+    elif isinstance(source, xen_r.ResultObj):
+        res = source
     else:
         raise Exception('unknown source')
+
+    if seperate:
+        plot_all_seperate(res)
+    else:
+        plot_all_merge(res)
 
 
 
