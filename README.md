@@ -99,9 +99,9 @@ print (modelpath)  # ndarray : shape(scenarioNum, t_count)
 
 ```
 
-Result Viwer
+Result Viewer
 -----------
-You can download [XenResultViwer](https://github.com/minikie/xenarix/releases/latest)
+You can download [ResultViwer](https://github.com/minikie/xenarix/releases/latest) For Windows 
 
 Download ResultViewer.Zip and Run Setup.exe 
 
