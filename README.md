@@ -100,8 +100,8 @@ print (modelpath)  # ndarray : shape(scenarioNum, t_count)
 
 Result Viwer
 -----------
-You can download Result Viewr [XenResultViwer](http://www.montrix.co.kr)
-
+You can download Result Viewr [XenResultViwer](https://github.com/minikie/xenarix/releases/latest)
+Download ResultViewer.Zip and Run Setup.exe 
 
 License
 -------
