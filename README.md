@@ -7,6 +7,7 @@ Xenarix(Beta) : Economic Scenario Generator
 [한글 버전](README-KOR.md)
 
 Xenarix is a economic scenario generator(ESG) for financial analysis. Now is Beta Release version and Support only for Windows.
+The Engine is developed by C++. 
 
 Feature Support
 ---------------
@@ -100,7 +101,8 @@ print (modelpath)  # ndarray : shape(scenarioNum, t_count)
 
 Result Viwer
 -----------
-You can download Result Viewr [XenResultViwer](https://github.com/minikie/xenarix/releases/latest)
+You can download [XenResultViwer](https://github.com/minikie/xenarix/releases/latest)
+
 Download ResultViewer.Zip and Run Setup.exe 
 
 ![ScreenShot](/img/resultviewer.png?raw=true)
