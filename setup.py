@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 # x = requirements.readlines()
 # requirements .close()
 
-version = '0.1.17'
+version = '0.1.18'
 #'SomePackage>=1.0.4'
 #install_requires = [v.replace("\n", "") for v in x]
 
@@ -23,7 +23,7 @@ setup(
     author_email     = 'master@montrix.co.kr',
     url              = 'https://github.com/minikie/xenarix',
     install_requires = install_requires,
-    packages         = find_packages(exclude = ['test', 'bak']),
+    packages         = find_packages(exclude = ['test', 'bak', 'img']),
     keywords         = ['scenario', 'finance', 'scenariogenerator','esg', 'alm'],
     # python_requires  = '>=2.7',
     package_data     = {
