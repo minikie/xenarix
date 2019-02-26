@@ -99,6 +99,10 @@ print (modelpath)  # ndarray : shape(scenarioNum, t_count)
 
 ```
 
+
+More Sample Script :  
+
+
 Result Viewer
 -----------
 You can download [ResultViwer](https://github.com/minikie/xenarix/releases/latest) For Windows 
