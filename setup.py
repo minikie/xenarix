@@ -6,8 +6,8 @@ version = xen.version
 install_requires = ['numpy>=1.14.5',
                     'matplotlib>=2.2.2',
                     'pandas>=0.23.3',
-                    'enum>=0.4.7',
-                    'scipy >= 1.2.0']
+                    'scipy >= 1.2.0',
+                    'statsmodels']
 
 setup(
     name             = 'xenarix',
