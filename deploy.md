@@ -24,3 +24,5 @@ pypi upload는 twine을 깔고
 
 test server -> twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 real server -> twine upload dist/*
+
+pip install --index-url https://test.pypi.org/simple/ xenarix
