@@ -1,14 +1,7 @@
 from setuptools import setup, find_packages
 import xenarix as xen
 
-# requirements  = open("requirements.txt", "r")
-# x = requirements.readlines()
-# requirements .close()
-
 version = xen.version
-
-#'SomePackage>=1.0.4'
-#install_requires = [v.replace("\n", "") for v in x]
 
 install_requires = ['numpy>=1.14.5',
                     'matplotlib>=2.2.2',
