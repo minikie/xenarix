@@ -41,6 +41,17 @@ To install Xenarix, simply use pip :
 $ pip install xenarix
 ```
 
+Import Xenarix Library :
+```python
+import xenarix as xen
+```
+
+
+Xenarix Version :
+```python
+>> xen.version
+```
+
 Sample Generation Script :
 
 ```python
@@ -81,7 +92,7 @@ res = xen_r.ResultObj(set_name, scen_id, result_id)
 
 # timegrid iter is pandas namedtuple
 for t in res.timegrid:
-    print t  # Pandas(INDEX=16L, DATE='2015-09-18', T=0.043835616438356005, DT=0.0027397260273970005)
+    print (t)  # Pandas(INDEX=16L, DATE='2015-09-18', T=0.043835616438356005, DT=0.0027397260273970005)
 
 # select using scen_count
 multipath = res.get_multipath(scen_count=1)
@@ -105,7 +116,7 @@ More Sample Script :
 
 Result Viewer
 -----------
-You can download [ResultViwer](https://github.com/minikie/xenarix/releases/latest) For Windows 
+You can download [ResultViewer](https://github.com/minikie/xenarix/releases/latest) For Windows 
 
 Download ResultViewer.Zip and Run Setup.exe 
 

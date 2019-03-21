@@ -1,6 +1,6 @@
 # coding=utf-8
 import xenarix as xen
-import results as xen_r
+import xenarix.results as xen_r
 import matplotlib.pyplot as plt
 
 

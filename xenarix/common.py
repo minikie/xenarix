@@ -1,6 +1,5 @@
 # coding=utf-8
 import os
-from enum import Enum
 from collections import OrderedDict
 import json
 import imp
@@ -92,12 +91,15 @@ module_dir_info = imp.find_module('xenarix')
 engine_path = module_dir_info[1] + '\\' + engine_filename
 
 
+class XenEnum:
+    pass
 
-class CurveFamily(Enum):
+
+class CurveFamily(XenEnum):
     IRSKRW = 'IRSKRW'
 
 
-class Interpolation(Enum):
+class Interpolation(XenEnum):
     BackwardFlat = 'BACKWARDFLAT'
     ForwardFlat = 'FORWARDFLAT'
     Linear = 'LINEAR'
@@ -116,11 +118,11 @@ class Interpolation(Enum):
     MonotonicLogParabolic = 'MONOTONICLOGPARABOLIC'
 
 
-class Extrapolation(Enum):
+class Extrapolation(XenEnum):
     FLAT = 'FLAT'
 
 
-class TimeGridFrequency(Enum):
+class TimeGridFrequency(XenEnum):
     Day = 'DAY'
     Month = 'MONTH'
     Quarter = 'QUARTER'
@@ -136,7 +138,7 @@ class TimeGridFrequency(Enum):
     EndOfAnnual = 'ENDOFANNUAL'
 
 
-class RndType(Enum):
+class RndType(XenEnum):
     Crude = 'CRUDE'
     Sobol = 'SOBOL'
 

@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import os
 import datetime
-import common as cm
+import xenarix.common as cm
 from collections import namedtuple
 
 T_Row = namedtuple('T_Row', 'INDEX DATE T DT INTERPOLATED')

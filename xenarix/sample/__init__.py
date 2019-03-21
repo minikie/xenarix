@@ -1,3 +1,3 @@
-from eq import *
-from ir import *
-from fx import *
+from xenarix.sample.eq import *
+from xenarix.sample.ir import *
+from xenarix.sample.fx import *

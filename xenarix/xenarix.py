@@ -3,7 +3,7 @@ import numpy as np
 import os
 from collections import OrderedDict
 import datetime
-from calculations import *
+from xenarix.calculations import *
 from collections import namedtuple
 
 Corr_Item = namedtuple('Corr_Item', 'FIRST SECOND CORR')
@@ -181,23 +181,40 @@ class Correlation(Tag):
     def add_corr_item(self, corr_item):
         for c in self.corr_items:
             if c.FIRST == corr_item.FIRST and c.SECOND == corr_item.SECOND:
-                c.CORR = corr_item.CORR
+                #c.CORR = corr_item.CORR
+                c = corr_item
+
+                self.matrix_data_update(c)
                 return
 
         self.corr_items.append(corr_item)
+        self.matrix_data_update(corr_item)
 
     def set_identity(self, dim):
         self.corr_matrix = np.identity(dim)
 
+    def matrix_data_update(self, c):
+        first_index = self.corr_nm_list.index(c.FIRST.upper())
+        second_index = self.corr_nm_list.index(c.SECOND.upper())
+        self.corr_matrix[first_index][second_index] = c.CORR
+        self.corr_matrix[second_index][first_index] = c.CORR
+
     def pre_build(self):
-        for c in self.corr_items:
-            first_index = self.corr_nm_list.index(c.FIRST.upper())
-            second_index = self.corr_nm_list.index(c.SECOND.upper())
-            self.corr_matrix[first_index][second_index] = c.CORR
-            self.corr_matrix[second_index][first_index] = c.CORR
+        # for c in self.corr_items:
+        #     first_index = self.corr_nm_list.index(c.FIRST.upper())
+        #     second_index = self.corr_nm_list.index(c.SECOND.upper())
+        #     self.corr_matrix[first_index][second_index] = c.CORR
+        #     self.corr_matrix[second_index][first_index] = c.CORR
 
         self.sections["CORR_LIST"] = self.corr_nm_list
         self.sections["CORR_MATRIX"] = self.corr_matrix
+
+    def dump(self):
+        corr_str = str(self.corr_nm_list)
+        corr_str += '\n'
+        corr_str += str(self.corr_matrix)
+        return corr_str
+
 
 
 # process model factory
@@ -887,6 +904,9 @@ class Scenario:
 
         if isinstance(second_model, str):
             second_nm = second_model
+
+        if first_nm == second_nm:
+            raise Exception('self correlation is fixed by 1.0')
 
         c = Corr_Item(first_nm, second_nm, corr)
 

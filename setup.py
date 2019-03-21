@@ -1,10 +1,12 @@
 from setuptools import setup, find_packages
+import xenarix as xen
 
 # requirements  = open("requirements.txt", "r")
 # x = requirements.readlines()
 # requirements .close()
 
-version = '0.1.18'
+version = xen.version
+
 #'SomePackage>=1.0.4'
 #install_requires = [v.replace("\n", "") for v in x]
 
