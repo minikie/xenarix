@@ -1,12 +1,12 @@
 # coding=euc-kr
-import xenarix as scen
+import xenarix as xen
 
 cali_id = 'cali_hw1f'
 
 
 def get_test_model(process_name):
 
-    model = scen.HullWhite1F(process_name)
+    model = xen.HullWhite1F(process_name)
 
     #model.fitting_curve.tenor = ['3M', '6M', '9M', '12M', '24M', '36M', '48M', '60M', '120M', '180M']
     #model.fitting_curve.value = [0.0164, 0.0161, 0.0159, 0.0164, 0.0173, 0.0182, 0.0191, 0.0218, 0.0229, 0.0229]
@@ -28,7 +28,7 @@ def get_test_model(process_name):
 def test(model):
     calibration_tools = dict()
 
-    calibration_tools['cap1'] = scen.CapTool('cap1')
+    calibration_tools['cap1'] = xen.CapTool('cap1')
     calibration_tools['cap1'].sections['DISCOUNT_CURVE_VALUE'] = [0.03, 0.031, 0.032, 0.033]
     calibration_tools['cap1'].sections['DISCOUNT_CURVE_TENOR'] = ['1Y', '2Y', '3Y', '4Y']
     calibration_tools['cap1'].sections['DISCOUNT_CURVE_INTERPOLATION'] = 'MONOTONICCUBICNATURALSPLINE'
@@ -50,14 +50,14 @@ def test(model):
 
     # cali1 = scen.get_calibrator('testcali1')
 
-    cali1 = scen.Calibrator()
+    cali1 = xen.Calibrator()
 
     cali1.model = model
     cali1.calibrationtools = calibration_tools
     cali1.save_as(cali_id)
     # cali1.calibrate('testcali1')
 
-    scen1 = scen.Scenario()
+    scen1 = xen.Scenario()
     scen1.add_model(model)
     scen1.save_as('hw1f_test')
     scen1.generate('hw1f_test', 'hw1f_result')

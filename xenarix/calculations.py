@@ -1,8 +1,5 @@
 # coding=utf-8
-from xenarix.common import *
-
-
-
+from .common import *
 
 
 class UnknownCalculation(BuiltInCalculation):

@@ -3,14 +3,14 @@ import numpy as np
 import pandas as pd
 import os
 import datetime
-import xenarix.common as cm
+from .common import *
 from collections import namedtuple
 
 T_Row = namedtuple('T_Row', 'INDEX DATE T DT INTERPOLATED')
 
 
 def build_result_data_info2(set_name, scen_name, result_name):
-    result_info_file_path = cm.xen_result_dir() + '/' + set_name + '/' + scen_name + '/' + result_name
+    result_info_file_path = xen_result_dir() + '/' + set_name + '/' + scen_name + '/' + result_name
 
     return build_result_data_info(result_info_file_path)
 
@@ -19,13 +19,13 @@ def build_result_data_info(result_info_file_path):
     if not os.path.exists(result_info_file_path):
         raise Exception("result info load error. file not exist.")
 
-    result_data_info = pd.read_csv(result_info_file_path + '/' + cm.resultinfo_filename, delimiter='|')
+    result_data_info = pd.read_csv(result_info_file_path + '/' + resultinfo_filename, delimiter='|')
 
     return result_data_info
 
 
 def build_cali_result_detail_info2(cali_name, model_name, result_name):
-    result_info_file_path = cm.xen_cali_result_dir() + '/' + cali_name + '/' + model_name + '/' + result_name
+    result_info_file_path = xen_cali_result_dir() + '/' + cali_name + '/' + model_name + '/' + result_name
 
     return build_cali_result_detail_info(result_info_file_path)
 
@@ -34,7 +34,7 @@ def build_cali_result_detail_info(result_info_file_path):
     if not os.path.exists(result_info_file_path):
         raise Exception("cali result info load error. result does not exist : {0}".format(result_info_file_path))
 
-    filename = result_info_file_path + '/' + cm.cali_detailinfo_filename
+    filename = result_info_file_path + '/' + cali_detailinfo_filename
     if not os.path.exists(filename):
         raise Exception("cali result datail file does not exist : {0}".format(filename))
 
@@ -42,7 +42,7 @@ def build_cali_result_detail_info(result_info_file_path):
 
 
 def build_cali_result_parameters_info2(cali_name, model_name, result_name):
-    result_info_file_path = cm.xen_cali_result_dir() + '/' + cali_name + '/' + model_name + '/' + result_name
+    result_info_file_path = xen_cali_result_dir() + '/' + cali_name + '/' + model_name + '/' + result_name
 
     return build_cali_result_parameters_info(result_info_file_path)
 
@@ -51,7 +51,7 @@ def build_cali_result_parameters_info(result_info_file_path):
     if not os.path.exists(result_info_file_path):
         raise Exception("cali result info load error. result does not exist : {0}".format(result_info_file_path))
 
-    filename = result_info_file_path + '/' + cm.cali_parametersinfo_filename
+    filename = result_info_file_path + '/' + cali_parametersinfo_filename
     if not os.path.exists(filename):
         raise Exception("cali result parameters file does not exist : {0}".format(filename))
 
@@ -59,7 +59,7 @@ def build_cali_result_parameters_info(result_info_file_path):
 
 
 def build_timegrid_info2(set_name, scen_name, result_name):
-    timegrid_info_file_path = os.path.join(cm.xen_result_dir(), set_name, scen_name, result_name)
+    timegrid_info_file_path = os.path.join(xen_result_dir(), set_name, scen_name, result_name)
 
     return build_timegrid_info(timegrid_info_file_path)
 
@@ -68,7 +68,7 @@ def build_timegrid_info(timegrid_info_file_path):
     if not os.path.exists(timegrid_info_file_path):
         raise Exception("result info load error. file not exist.")
 
-    result_data_info = pd.read_csv( os.path.join(timegrid_info_file_path, cm.timegridinfo_filename),
+    result_data_info = pd.read_csv( os.path.join(timegrid_info_file_path, timegridinfo_filename),
                                     header=None,
                                     delimiter='|',
                                     usecols=[0,1,2,3],
@@ -131,7 +131,7 @@ class TimeGrid:
     def has_date(self, d):
         return (self.data['DATE'] == d).any()
 
-    def has_t(self, t, error=cm.error_bound):
+    def has_t(self, t, error=error_bound):
         return (self.data['T'].between(t - error, t + error)).any()
 
     def find_row_by_date(self, d, interpolation=False):
@@ -163,7 +163,7 @@ class TimeGrid:
             pos = row['INDEX']
             return T_Row(pos, row['DATE'], row['T'], row['DT'], False)
 
-    def find_row_by_t(self, t, interpolation=False, error=cm.error_bound):
+    def find_row_by_t(self, t, interpolation=False, error=error_bound):
         def interpolate(before_t_row, t):
             before_date = before_t_row.DATE
             before_t = before_t_row.T
@@ -238,7 +238,7 @@ class ResultModel:
         # STATUS
         # DESCRIPTION
         # FILEPATH
-        self.name = cm.result_model_key(result_data_info_row)
+        self.name = result_model_key(result_data_info_row)
 
         self.index_name = result_data_info_row['REF_INDEX_CD']
         self.shock_name = result_data_info_row['SHOCK_NAME']
@@ -385,16 +385,20 @@ class ResultObj:
 
     # model_count = 0 to model_num - 1
     def get_modelpath(self, model_count=0):
-        return self.models.values()[model_count].data
+        return list(self.models.values())[model_count].data
+
+    # model name
+    def get_modelpath_by_name(self, model_name):
+        return self.models[model_name].data
 
     # find ResultModel using key
     def get_resultModel(self, model, calc=None, shock='BASE'):
-        if isinstance(model, cm.ProcessModel):
+        if isinstance(model, ProcessModel):
             model_name = model.model_name
         else:
             model_name = model
 
-        if isinstance(calc, cm.Calculation):
+        if isinstance(calc, Calculation):
             calc_name = calc.calc_name
         elif isinstance(calc, str):
             calc_name = calc
@@ -433,14 +437,14 @@ def xeResultLoad(result_obj, start_pos, end_pos):
 
 
 def resultModel_list(set_name, scen_name, result_name):
-    result_dir = cm.xen_result_dir() + '/' + set_name + '/' + scen_name + '/' + result_name
+    result_dir = xen_result_dir() + '/' + set_name + '/' + scen_name + '/' + result_name
 
-    result_data_info = build_result_data_info(result_dir + '/' + cm.resultinfo_filename)
+    result_data_info = build_result_data_info(result_dir + '/' + resultinfo_filename)
     result_arr = dict()
     # for model_name, shock_nm, calculation, filepath, calc_type in zip(result_data_info['REF_INDEX_CD'], result_data_info['SHOCK_NAME'], result_data_info['CALCULATION'], result_data_info['FILEPATH'], result_data_info['CALC_TYPE']):
     #     result_arr[str(model_name) + '_' + str(shock_nm) + '_' + str(calculation)] = ResultObj(filepath, calc_type)
     for index, row in result_data_info.iterrows():
-        result_arr[cm.result_model_key(row)] = ResultModel(row)
+        result_arr[result_model_key(row)] = ResultModel(row)
         #result_arr[str(row['REF_INDEX_CD']) + '_' + str(row['SHOCK_NAME']) + '_' + str(row['CALCULATION'])] = ResultModel(row)
 
     return result_arr
@@ -448,12 +452,12 @@ def resultModel_list(set_name, scen_name, result_name):
 
 def resultObj_list():
     res = []
-    scen_set_items = os.listdir(cm.xen_result_dir())
+    scen_set_items = os.listdir(xen_result_dir())
 
     for scen_set in scen_set_items:
-        scen_id_items = os.listdir(cm.xen_result_dir() + "\\" + scen_set)
+        scen_id_items = os.listdir(xen_result_dir() + "\\" + scen_set)
         for scen_id in scen_id_items:
-            result_id_items = os.listdir(cm.xen_result_dir() + "\\" + scen_set + "\\" + scen_id)
+            result_id_items = os.listdir(xen_result_dir() + "\\" + scen_set + "\\" + scen_id)
             for result_id in result_id_items:
                 #res.append([scen_set, scen_id, result_id, ResultObj(scen_set, scen_id, result_id)])
                 res.append(ResultObj(scen_set, scen_id, result_id))
