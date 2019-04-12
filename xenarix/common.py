@@ -4,6 +4,7 @@ from collections import OrderedDict
 import json
 import imp
 import numpy as np
+import platform
 
 #xen_bin_dir = os.environ['XENARIX_BINPATH'].replace(';', '')
 xen_bin_dir = None
@@ -80,7 +81,7 @@ xen_extension = '.xen'
 cali_extension = '.cali'
 xenset_extension = '.xens'
 
-engine_filename = 'xenarix_engine.exe'
+engine_filename =  'xenarix_engine.exe' if platform.system() == 'Windows' else 'xenarix_engine.out'
 resultinfo_filename = 'RESULTINFO.TXT'
 timegridinfo_filename = 'TIMEGRIDINFO.TXT'
 cali_detailinfo_filename = 'DETAIL.TXT'
