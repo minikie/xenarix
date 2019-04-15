@@ -455,9 +455,9 @@ def resultObj_list():
     scen_set_items = os.listdir(xen_result_dir())
 
     for scen_set in scen_set_items:
-        scen_id_items = os.listdir(xen_result_dir() + "\\" + scen_set)
+        scen_id_items = os.listdir(xen_result_dir() + dir_sep + scen_set)
         for scen_id in scen_id_items:
-            result_id_items = os.listdir(xen_result_dir() + "\\" + scen_set + "\\" + scen_id)
+            result_id_items = os.listdir(xen_result_dir() + dir_sep + scen_set + dir_sep + scen_id)
             for result_id in result_id_items:
                 #res.append([scen_set, scen_id, result_id, ResultObj(scen_set, scen_id, result_id)])
                 res.append(ResultObj(scen_set, scen_id, result_id))

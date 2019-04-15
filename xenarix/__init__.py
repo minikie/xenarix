@@ -989,7 +989,7 @@ class Scenario:
         self.build()
         timestamp_str = datetime.datetime.today().strftime('%Y%m%d%H%M%S')
         filename = scen_id + '_' + timestamp_str + xen_extension
-        f = open(xen_input_temp_dir() + '\\' + filename, 'w')
+        f = open(xen_input_temp_dir() + dir_sep + filename, 'w')
         f.write(self.contents)
         f.close()
 
@@ -1024,7 +1024,7 @@ class Scenario:
     def save_test(self, scen_id):
         self.build()
         filename = scen_id + '_test' + xen_extension
-        f = open(xen_input_temp_dir() + '\\' + filename, 'w')
+        f = open(xen_input_temp_dir() + dir_sep + filename, 'w')
         f.write(self.contents)
         f.close()
 
@@ -1159,7 +1159,7 @@ class ScenarioSet:
             contents += scen.contents
             contents += '@'
 
-        f = open(xen_input_dir() + '\\' + new_set_name + xenset_extension, 'w')
+        f = open(xen_input_dir() + dir_sep + new_set_name + xenset_extension, 'w')
         f.write(contents)
         f.close()
 

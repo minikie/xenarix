@@ -192,14 +192,14 @@ class Calibrator:
         self.build()
         timestamp_str = datetime.datetime.today().strftime('%Y%m%d%H%M%S')
         filename = self.general.result_id  + '_' + timestamp_str + cali_extension
-        f = open(xen_cali_input_dir() + '\\' + filename, 'w')
+        f = open(xen_cali_input_dir() + dir_sep + filename, 'w')
         f.write(self.contents)
         f.close()
 
         return filename
 
     def load(self, id):
-        fpath = xen_cali_input_dir() + '\\' + id + xen_extension
+        fpath = xen_cali_input_dir() + dir_sep + id + xen_extension
         if not os.path.exists(fpath):
             raise IOError()
 

@@ -8,7 +8,7 @@ import platform
 
 #xen_bin_dir = os.environ['XENARIX_BINPATH'].replace(';', '')
 xen_bin_dir = None
-
+dir_sep = os.sep
 error_bound = 1.0e-10
 
 
@@ -59,13 +59,13 @@ def check_directory(dir):
     return dir
 
 
-def xen_input_dir(): return check_directory(get_repository() + "\\scen_input_file")
-def xen_input_temp_dir(): return check_directory(get_repository() + "\\scen_input_file\\temp")
-def xen_result_dir(): return check_directory(get_repository() + "\\scen_results")
-def xen_export_dir(): return check_directory(get_repository() + "\\export")
+def xen_input_dir(): return check_directory(get_repository() + dir_sep + "scen_input_file")
+def xen_input_temp_dir(): return check_directory(get_repository() + dir_sep + "scen_input_file" + dir_sep + "temp")
+def xen_result_dir(): return check_directory(get_repository() + dir_sep + "scen_results")
+def xen_export_dir(): return check_directory(get_repository() + dir_sep + "export")
 
-def xen_cali_input_dir(): return check_directory(get_repository() + "\\cali_input_file")
-def xen_cali_result_dir(): return check_directory(get_repository() + "\\cali_results")
+def xen_cali_input_dir(): return check_directory(get_repository() + dir_sep + "cali_input_file")
+def xen_cali_result_dir(): return check_directory(get_repository() + dir_sep + "cali_results")
 
 
 def initialize_dir():
@@ -89,7 +89,7 @@ cali_parametersinfo_filename = 'PARA.TXT'
 
 
 module_dir_info = imp.find_module('xenarix')
-engine_path = module_dir_info[1] + '\\' + engine_filename
+engine_path = module_dir_info[1] + dir_sep + engine_filename
 
 
 class XenEnum:
