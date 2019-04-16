@@ -2,7 +2,7 @@ Xenarix(Beta) : Economic Scenario Generator
 ==========================
 
 ![image](https://img.shields.io/badge/Platform-Windows-Green.svg)
-![image](https://img.shields.io/badge/Platform-Linux-Green.svg)
+![image](https://img.shields.io/badge/Platform-Linux-Orange.svg)
 ![image](https://img.shields.io/pypi/pyversions/requests.svg)
 
 [한글 버전](README-KOR.md)
