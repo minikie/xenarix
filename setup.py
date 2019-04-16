@@ -22,7 +22,7 @@ setup(
     keywords         = ['scenario', 'finance', 'scenariogenerator','esg', 'alm'],
     # python_requires  = '>=2.7',
     package_data     = {
-        'xenarix': ['xenarix_engine.exe'],
+        'xenarix': ['xenarix_engine.exe', 'xenarix_engine.out'],
     },
     zip_safe=False,
     classifiers      = [
