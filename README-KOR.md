@@ -2,6 +2,7 @@ Xenarix(Beta) : 경제 시나리오 발생기
 ==========================
 
 ![image](https://img.shields.io/badge/Platform-Windows-Green.svg)
+![image](https://img.shields.io/badge/Platform-Linux-Orange.svg)
 ![image](https://img.shields.io/pypi/pyversions/requests.svg)
 
 [ENG Version](README.md)
