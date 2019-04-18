@@ -2,11 +2,12 @@ Xenarix(Beta) : 경제 시나리오 발생기
 ==========================
 
 ![image](https://img.shields.io/badge/Platform-Windows-Green.svg)
+![image](https://img.shields.io/badge/Platform-Linux-Orange.svg)
 ![image](https://img.shields.io/pypi/pyversions/requests.svg)
 
 [ENG Version](README.md)
 
-Xenarix 는 금융 분석을 위한 경제 시나리오 발생기(ESG) 입니다. 현재는 베타버전으로 윈도우환경에서만 사용할 수 있습니다.
+Xenarix 는 금융 분석을 위한 경제 시나리오 발생기(ESG) 입니다. 
 
 특징
 ---------------
