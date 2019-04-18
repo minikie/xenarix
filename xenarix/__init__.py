@@ -4,7 +4,7 @@ import datetime
 from .calculations import *
 from collections import namedtuple
 
-version = '0.1.23'
+version = '0.1.24'
 
 Corr_Item = namedtuple('Corr_Item', 'FIRST SECOND CORR')
 
@@ -972,7 +972,7 @@ class Scenario:
         temp_filename = self.save_temp(scen_id)
 
         # --setname=debug --scenario_file_temp --scenariofilename=lastgen.xen
-        arg_str = ['--gen',
+        arg_str = ['--genr',
                    '--repo={}'.format(get_repository()),
                    '--setname={}'.format(scen_set_nm),
                    '--file={}'.format(temp_filename)]
