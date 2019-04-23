@@ -18,14 +18,14 @@ print (result_list)
 
 result_list['BASE_FITTINGDISCOUNT'].load(1, 1)
 
-shortrate_aver = result_list['BASE_nan'].averave()
+shortrate_aver = result_list['BASE_nan'].average()
 shortrate = result_list['BASE_nan'].load()
 shortrate_uncon_expectation = result_list['BASE_UNCONDITIONALEXPECTATION'].load()
 mrk_discount = result_list['BASE_FITTINGDISCOUNT'].load()
-discount = result_list['BASE_MODEL_DISCOUNTBOND'].averave()
-mrk_spot = result_list['BASE_FITTINGSPOT'].averave()
-mrk_forward = result_list['BASE_FITTINGFORWARD'].averave()
-rnd_z = result_list['BASE_RANDOMZ'].averave()
+discount = result_list['BASE_MODEL_DISCOUNTBOND'].average()
+mrk_spot = result_list['BASE_FITTINGSPOT'].average()
+mrk_forward = result_list['BASE_FITTINGFORWARD'].average()
+rnd_z = result_list['BASE_RANDOMZ'].average()
 
 
 

@@ -13,7 +13,16 @@ error_bound = 1.0e-10
 
 
 def result_model_key(row):
-    return str(row['REF_INDEX_CD']) + '_' + str(row['SHOCK_NAME']) + '_' + str(row['CALCULATION'])
+    ref_index_cd = str(row['REF_INDEX_CD'])
+    calculation = 'VALUE' if str(row['CALCULATION']) == 'nan' else str(row['CALCULATION'])
+    shock_name = str(row['SHOCK_NAME'])
+    key = shock_name + '_' + ref_index_cd + '_' + calculation
+
+    return key
+
+    #return str(row['REF_INDEX_CD']) + '_' + str(row['SHOCK_NAME']) + '_' + str(row['CALCULATION'])
+    # use ordering in filename
+    #return str(row['SHOCK_NAME']) + '_' + str(row['REF_INDEX_CD']) + '_' + str(row['CALCULATION'])
 
 
 def is_equal(x, y):
@@ -142,6 +151,31 @@ class TimeGridFrequency(XenEnum):
 class RndType(XenEnum):
     Crude = 'CRUDE'
     Sobol = 'SOBOL'
+    Halton = 'HALTON'
+    Faure = 'FAURE'
+
+
+class RndSubType(XenEnum):
+    Default = 'DEFAULT'
+
+    # for sobol
+    Unit = 'UNIT'
+    Jaeckel = 'JAECKEL'
+    SobolLevitan = 'SOBOLLEVITAN'
+    SobolLevitanLemieux= 'SOBOLLEVITANLEMIEUX'
+    JoeKuoD5 = 'JOEKUOD5'
+    JoeKuoD6 = 'JOEKUOD6'
+    JoeKuoD7 = 'JOEKUOD7'
+    Kuo = 'KUO'
+    Kuo2 = 'KUO2'
+    Kuo3 = 'KUO3'
+
+    # for crude
+    MersenneTwister = 'MERSENNETWISTER'
+    Knuth = 'KNUTH' # for crude
+    Ranlux3 = 'RANLUX3' # for crude
+    Ranlux4 = 'RANLUX4'  # for crude
+    Lecuyer = 'LECUYER' # for crude
 
 
 class KeyValue:

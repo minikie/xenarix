@@ -4,7 +4,7 @@ import xenarix.results as xen_r
 import matplotlib.pyplot as plt
 
 
-def plot_all_merge(res):
+def plot_all_seperate(res):
     if not isinstance(res, xen_r.ResultObj):
         raise Exception('ResultObj type is needed')
 
@@ -18,11 +18,12 @@ def plot_all_merge(res):
     plt.show()
 
 
-def plot_all_seperate(res):
+def plot_all_merge(res):
     if not isinstance(res, xen_r.ResultObj):
         raise Exception('ResultObj type is needed')
 
     plt.figure(1)
+    plt.suptitle(res.result_name)
 
     for i, m in enumerate(res.models.values()):
         plt.plot(res.timegrid.data['T'], m.average(), label=m.name)
@@ -38,7 +39,7 @@ def plot_all(source, seperate=True):
     if isinstance(source, xen.ScenarioSet):
         for scen in source.scenario_list:
             res = xen_r.ResultObj(source.set_name, scen.get_scen_id(), scen.get_result_id())
-
+            plot_all_merge(res)
     elif isinstance(source, xen.Scenario):
         res = xen_r.ResultObj(source.owner_set_name, source.get_scen_id(), source.get_result_id())
     elif isinstance(source, xen_r.ResultObj):

@@ -2,6 +2,7 @@
 from __future__ import print_function
 import datetime
 from .calculations import *
+from .results import ResultObj
 from collections import namedtuple
 
 version = '0.1.24'
@@ -19,8 +20,8 @@ class General(Tag):
         self.delimiter = "SPACE"
         self.maxyear = 30
         self.n_peryear = 52
-        self.rnd_type = "SOBOL"
-        self.rnd_subtype = "SOBOL"
+        self.rnd_type = RndType.Sobol
+        self.rnd_subtype = RndSubType.Jaeckel
         self.rnd_seed = 1
         self.rnd_skip = 0
         self.moment_match = False
@@ -1162,6 +1163,13 @@ class ScenarioSet:
         f = open(xen_input_dir() + dir_sep + new_set_name + xenset_extension, 'w')
         f.write(contents)
         f.close()
+
+    def get_result_obj_list(self):
+        res = []
+
+        for scen in self.scenario_list:
+            res.append(ResultObj(self.set_name, scen.get_scen_id(), scen.get_result_id()))
+        return res
 
 
 # global method

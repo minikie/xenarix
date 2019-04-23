@@ -4,7 +4,7 @@ import pandas as pd
 import os
 import datetime
 from .common import *
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 
 T_Row = namedtuple('T_Row', 'INDEX DATE T DT INTERPOLATED')
 
@@ -87,6 +87,9 @@ class TimeGrid:
 
     def __iter__(self):
         return self.data.itertuples(index=False)
+
+    def __getitem__(self, item):
+        return self.data.iloc[item]
 
     def initialize(self):
         self.data = build_timegrid_info2(self.set_name, self.scen_name, self.result_name)
@@ -260,6 +263,35 @@ class ResultModel:
     def average(self):
         return np.average(self.data, axis=0)
 
+    def analytic(self):
+        ue_filepath = self.filepath.replace('_value', '_UNCONDITIONALEXPECTATION')
+        v = np.memmap(ue_filepath, np.double, mode='r', shape=(1, self.t_count))
+        return v
+
+
+
+    # def load(self, start_pos=None, end_pos=None):
+    #     if start_pos is None:
+    #         start_pos = 1
+    #
+    #     self.scenario_num = self.result_data_info['SCENARIO_NUM'][0]
+    #
+    #     if end_pos is None:
+    #         end_pos = self.scenario_num
+    #
+    #     if self.calc_type == 'DEBUGPRINT':
+    #         self.scenario_num = 1
+    #
+    #     self.t_count = self.result_data_info['T_COUNT'][0]
+    #     self.arr = np.memmap(self.file_full_path, np.double, mode='r', shape=(self.scenario_num, self.t_count))[start_pos-1:end_pos].tolist()
+    #     return self.arr
+    #
+    # def average(self, start_pos=None, end_pos=None):
+    #     if self.arr is None:
+    #         self.load(start_pos, end_pos)
+    #
+    #     return np.average(self.arr, axis=0)
+
     # return value selected scenario_count
     def interpolated_value(self, t_row, scenario_count = 0):
         return np.interp(t_row.T, self.timegrid.data['T'], self.data[scenario_count,:])
@@ -340,7 +372,7 @@ class ResultObj:
         # self.process_names = None
         self.scenario_num = 0
         self.t_count = 0
-        self.models = {}
+        self.models = OrderedDict()
         self.timegrid = None
         self.result_data_info = None
         self.initialize()
@@ -360,13 +392,11 @@ class ResultObj:
         for index, row in self.result_data_info.iterrows():
             # if debug 가 아니면 넣기...?
             rm = ResultModel(row, self.timegrid)
-            ref_index_cd = str(row['REF_INDEX_CD'])
-            calculation = 'VALUE' if str(row['CALCULATION']) == 'nan' else str(row['CALCULATION'])
-            shock_name = str(row['SHOCK_NAME'])
-            key = ref_index_cd + '_' + calculation + '_' + shock_name
-            self.models[str.upper(key)] = rm
-            # self.names.append(rm.name)
 
+            self.models[rm.name] = rm
+            #self.models[str.upper(key)] = rm
+
+            # self.names.append(rm.name)
 
     # scen_count = 0 to scen_num - 1
     def get_multipath(self, scen_count, type='namedtuple'):
@@ -408,27 +438,9 @@ class ResultObj:
         key = str.upper(model_name + '_' + calc_name + '_' + shock)
         return self.models[key]
 
-    def load(self, start_pos=None, end_pos=None):
-        if start_pos is None:
-            start_pos = 1
+    def get_resultModel_by_index(self, index):
+        return list(self.models.values())[index]
 
-        self.scenario_num = self.result_data_info['SCENARIO_NUM'][0]
-
-        if end_pos is None:
-            end_pos = self.scenario_num
-
-        if self.calc_type == 'DEBUGPRINT':
-            self.scenario_num = 1
-
-        self.t_count = self.result_data_info['T_COUNT'][0]
-        self.arr = np.memmap(self.file_full_path, np.double, mode='r', shape=(self.scenario_num, self.t_count))[start_pos-1:end_pos].tolist()
-        return self.arr
-
-    def averave(self, start_pos=None, end_pos=None):
-        if self.arr is None:
-            self.load(start_pos, end_pos)
-
-        return np.average(self.arr, axis=0)
 
 
 def xeResultLoad(result_obj, start_pos, end_pos):

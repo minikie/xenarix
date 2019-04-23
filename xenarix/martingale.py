@@ -60,10 +60,10 @@ def graph(scen):
 
     for model in scen.models.values():
         model_name = model.model_name.upper()
-        shortrate_aver = result_list[model_name + '_' + 'BASE_nan'].averave()
+        shortrate_aver = result_list[model_name + '_' + 'BASE_nan'].average()
         shortrate_uncon_expectation = result_list[model_name + '_' +'BASE_UNCONDITIONALEXPECTATION'].load()
-        rnd_z = result_list[model_name + '_' +'BASE_RANDOMZ'].averave()
-        drift = result_list[model_name + '_' +'BASE_DRIFT'].averave()
+        rnd_z = result_list[model_name + '_' +'BASE_RANDOMZ'].average()
+        drift = result_list[model_name + '_' +'BASE_DRIFT'].average()
 
         plt.figure(1)
         plt.title(model_name)
