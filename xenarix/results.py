@@ -268,8 +268,6 @@ class ResultModel:
         v = np.memmap(ue_filepath, np.double, mode='r', shape=(1, self.t_count))
         return v
 
-
-
     # def load(self, start_pos=None, end_pos=None):
     #     if start_pos is None:
     #         start_pos = 1
@@ -435,7 +433,7 @@ class ResultObj:
         else:
             calc_name = 'nan'
 
-        key = str.upper(model_name + '_' + calc_name + '_' + shock)
+        key = result_model_key2(shock, model_name, calc_name)
         return self.models[key]
 
     def get_resultModel_by_index(self, index):

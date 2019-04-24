@@ -9,8 +9,9 @@ def build_test_scen_set():
     test_scen_set = xen.ScenarioSet('test_scen_set')
 
     scen_num = 1000
-    moment_match = True
-    rnd_seed = 15
+    maxyear = 3
+    moment_match = False
+    rnd_seed = 10
     rnd_skip = 4096 * 2
     test_model = xen_s.gbm('test_gbm')
     calc_uncon_expectation = xen_c.UnconditionalExpectation()
@@ -26,6 +27,7 @@ def build_test_scen_set():
     for rnd_subtype in rnd_crude_subtype_list:
         scen = xen.Scenario('scen1', rnd_subtype + '_result')
         scen.general.scenario_num = scen_num
+        scen.general.maxyear = maxyear
         scen.general.rnd_type = xen.RndType.Crude
         scen.general.rnd_subtype = rnd_subtype
         scen.general.rnd_seed = rnd_seed
@@ -48,6 +50,7 @@ def build_test_scen_set():
     for rnd_subtype in rnd_sobol_subtype_list:
         scen = xen.Scenario('scen1', rnd_subtype + '_result')
         scen.general.scenario_num = scen_num
+        scen.general.maxyear = maxyear
         scen.general.rnd_type = xen.RndType.Sobol
         scen.general.rnd_subtype = rnd_subtype
         scen.general.rnd_seed = rnd_seed
@@ -56,9 +59,10 @@ def build_test_scen_set():
         scen.add_model(test_model)
         test_scen_set.add_scenario(scen)
 
-    # for halton
+    # for Halton
     scen = xen.Scenario('scen1', xen_r.RndType.Halton + '_result')
     scen.general.scenario_num = scen_num
+    scen.general.maxyear = maxyear
     scen.general.rnd_type = xen.RndType.Halton
     scen.general.moment_match = moment_match
     scen.general.rnd_seed = rnd_seed
@@ -69,6 +73,7 @@ def build_test_scen_set():
     # for Faure
     scen = xen.Scenario('scen1', xen_r.RndType.Faure + '_result')
     scen.general.scenario_num = scen_num
+    scen.general.maxyear = maxyear
     scen.general.rnd_type = xen.RndType.Faure
     scen.general.moment_match = moment_match
     scen.general.rnd_seed = rnd_seed

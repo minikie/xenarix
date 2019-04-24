@@ -13,10 +13,18 @@ error_bound = 1.0e-10
 
 
 def result_model_key(row):
-    ref_index_cd = str(row['REF_INDEX_CD'])
+    ref_index_cd = str(row['REF_INDEX_CD'])  # this is model_name
     calculation = 'VALUE' if str(row['CALCULATION']) == 'nan' else str(row['CALCULATION'])
     shock_name = str(row['SHOCK_NAME'])
-    key = shock_name + '_' + ref_index_cd + '_' + calculation
+    key = shock_name.upper() + '_' + ref_index_cd.upper() + '_' + calculation.upper()
+
+    return key
+
+def result_model_key2(shock, model_name, calc_name):
+    ref_index_cd = model_name
+    calculation = 'VALUE' if calc_name == 'nan' else calc_name
+    shock_name = shock
+    key = shock_name.upper() + '_' + ref_index_cd.upper() + '_' + calculation.upper()
 
     return key
 

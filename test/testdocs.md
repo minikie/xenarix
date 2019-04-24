@@ -38,10 +38,22 @@ thread_num = 나중에 검토
 * gk
 
 - sample model
-- using variable model (for several market data set) 
+- using variable model (for several market data set)
 
 pass criteria
 analytic avaerage converge
+
+#### pricing
+상품 선정 ( price 먼저, greek은 나중에)
+1. kospi2 call, put option
+2. stepdown els
+3. dls
+4. fx option
+
+그... simul num 줄여가면서 수렴도 체크
+
+여기서 incubating을 여기 project에서 하고,
+추후에 잘 packaging 해서 mxdevtool로 보냄
 
 #### shock
 * value add
@@ -69,12 +81,7 @@ pass criteria
 사후 correlation이 잘 붙는가
 
 
-#### pricing
-상품 선정 
-vanilla option
-els
-dls
-fx option
+
 
 #### graph view
 

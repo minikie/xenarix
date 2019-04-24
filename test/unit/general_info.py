@@ -16,7 +16,7 @@ def build_test_scen_set():
     return test_scen_set
 
 
-class TestGeneralInfoMethods(unittest.TestCase):
+class TestGeneralInfo(unittest.TestCase):
 
     def test_scenario_id(self):
         scen_id_in_scen = test_scen.get_scen_id() # scen obj
