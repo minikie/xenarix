@@ -310,7 +310,7 @@ class ResultModel:
         t1 = next_t_row.T
         t = t_row.T
 
-        y = y0 + (t-t0)* (y1-y0) / (t1-t0)
+        y = y0 + (t-t0) * (y1-y0) / (t1-t0)
 
         #print str(t0) + ' : ' + str(t1) + ',' + str(t)
         #print str(y0) + ' : ' + str(y1) + ',' + str(y)
@@ -439,6 +439,8 @@ class ResultObj:
     def get_resultModel_by_index(self, index):
         return list(self.models.values())[index]
 
+    def get_resultModel_list(self):
+        return list(self.models.values())
 
 
 def xeResultLoad(result_obj, start_pos, end_pos):
