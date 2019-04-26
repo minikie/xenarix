@@ -9,12 +9,10 @@ import random
 from matplotlib.pylab import rcParams
 rcParams['figure.figsize'] = 5, 3
 
-
 # https://www.analyticsvidhya.com/blog/2016/02/time-series-forecasting-codes-python/
 # http://www.seanabu.com/2016/03/22/time-series-seasonal-ARIMA-model-in-python/
 # https://machinelearningmastery.com/sarima-for-time-series-forecasting-in-python/
 # https://www.datasciencecentral.com/profiles/blogs/tutorial-forecasting-with-seasonal-arima
-
 
 def test_decompose(timeseries):
 
@@ -55,17 +53,17 @@ def test_stationarity(timeseries):
     plt.show(block=True)
 
     # Perform Dickey-Fuller test:
-    print 'Results of Dickey-Fuller Test:'
+    print('Results of Dickey-Fuller Test:')
     dftest = adfuller(timeseries, autolag='AIC')
     dfoutput = pd.Series(dftest[0:4], index=['Test Statistic', 'p-value', '#Lags Used', 'Number of Observations Used'])
     for key, value in dftest[4].items():
         dfoutput['Critical Value (%s)' % key] = value
-    print dfoutput
+    print(dfoutput)
 
 def get_data():
     dateparse = lambda dates: pd.datetime.strptime(dates, '%Y-%m')
     data = pd.read_csv('data/AirPassengers.csv', parse_dates=['Month'], index_col='Month', date_parser=dateparse)
-    print data
+    print(data)
     ts = data['#Passengers']
 
     return ts
@@ -88,11 +86,11 @@ def main():
     model = SARIMAX(ts_log, order=arima_order, seasonal_order=arima_seasonal_order)
     #model = ARIMA(ts_log, order=arima_order)
     results_ARIMA = model.fit(disp=-1)
-    print results_ARIMA.summary()
+    print(results_ARIMA.summary())
     #print results_ARIMA.predict(dynamic= True)
     plt.plot(ts_log)
     forecast_res = results_ARIMA.forecast(120)
-    print forecast_res
+    print(forecast_res)
     plt.plot(forecast_res, color='red')
     # print results_ARIMA.fittedvalues
     # plt.plot(results_ARIMA.fittedvalues[1:], color='red')
