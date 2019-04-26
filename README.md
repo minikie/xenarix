@@ -117,7 +117,7 @@ More Sample Script :
 
 Result Viewer
 -----------
-You can download [ResultViewer](https://github.com/minikie/xenarix/releases/latest) For Windows 
+You can download [XenarixResultViewer](https://github.com/minikie/xenarix/releases/latest) For Windows 
 
 Download ResultViewer.Zip and Run Setup.exe 
 
