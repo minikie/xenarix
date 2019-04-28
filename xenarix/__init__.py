@@ -5,7 +5,7 @@ from .calculations import *
 from .results import ResultObj
 from collections import namedtuple
 
-version = '0.1.24'
+version = '0.1.25'
 
 Corr_Item = namedtuple('Corr_Item', 'FIRST SECOND CORR')
 
