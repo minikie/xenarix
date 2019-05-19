@@ -12,7 +12,7 @@ scen_id = 'scen1'
 result_id = 'res1'
 scen1 = xen.Scenario(scen_id=scen_id, result_id=result_id)
 
-scen1.general.scenario_num = 30
+scen1.general.scenario_num = 1000
 scen1.general.maxyear = 5
 
 # make variable
@@ -67,8 +67,8 @@ scenSet.generate_test()
 
 res = xen_r.ResultObj(set_name, scen_id, result_id)
 
-print(res.models['KOSPI200_VALUE_BASE'].x0())
-print(res.models['KOSPI200_VALUE_SHOCK2'].x0())
+print(res.models['BASE_KOSPI200_VALUE'].x0())
+print(res.models['SHOCK2_KOSPI200_VALUE'].x0())
 
 xen_v.plot_all(res)
 

@@ -1009,7 +1009,7 @@ class Scenario:
         temp_filename = self.save_test(scen_id)
 
         # --setname=debug --scenario_file_temp --scenariofilename=lastgen.xen
-        arg_str = ['--gen',
+        arg_str = ['--genr',
                    '--repo={}'.format(get_repository()),
                    '--setname={}'.format(scen_set_nm),
                    '--file={}'.format(temp_filename)]
