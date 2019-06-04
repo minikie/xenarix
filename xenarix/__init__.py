@@ -872,6 +872,8 @@ class Scenario:
             raise Exception('duplicated model_name : ' + model.model_name)
         self.models[model.model_name] = model
 
+        self.refresh_corr()
+
     def add_shock(self, shock):
         if shock.shock_name in self.shocks:
             raise Exception('duplicated shock name : ' + shock.shock_name)
@@ -1009,7 +1011,7 @@ class Scenario:
         temp_filename = self.save_test(scen_id)
 
         # --setname=debug --scenario_file_temp --scenariofilename=lastgen.xen
-        arg_str = ['--gen',
+        arg_str = ['--genr',
                    '--repo={}'.format(get_repository()),
                    '--setname={}'.format(scen_set_nm),
                    '--file={}'.format(temp_filename)]

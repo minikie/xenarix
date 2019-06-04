@@ -67,9 +67,6 @@ scenSet.generate_test()
 
 res = xen_r.ResultObj(set_name, scen_id, result_id)
 
-print(res.models['KOSPI200_VALUE_BASE'].x0())
-print(res.models['KOSPI200_VALUE_SHOCK2'].x0())
+print(res.models)
 
 xen_v.plot_all(res)
-
-#print res.models['KOSPI200_VALUE_SHOCK2'].x0()

@@ -24,7 +24,7 @@ scen1.add_model(xen_s.gbmconst('kospi'))
 scen1.add_model(xen_s.hw1f('irskrw'))
 
 # set identity correlation
-scen1.refresh_corr()
+#scen1.refresh_corr()
 
 scenSet.add_scenario(scen1)
 scenSet.generate()
