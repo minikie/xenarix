@@ -67,6 +67,6 @@ scenSet.generate_test()
 
 res = xen_r.ResultObj(set_name, scen_id, result_id)
 
-print(res.models)
+print(res.res_models)
 
 xen_v.plot_all(res)

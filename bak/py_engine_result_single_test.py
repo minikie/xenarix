@@ -11,5 +11,5 @@ result_id = 'testresult_1'
 
 result = results.ResultObj(set_name, scen_id, result_id)
 
-print(result.models[0].data)
+print(result.res_models[0].data)
 

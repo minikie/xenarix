@@ -8,7 +8,7 @@ def plot_all_seperate(res):
     if not isinstance(res, xen_r.ResultObj):
         raise Exception('ResultObj type is needed')
 
-    for i, m in enumerate(res.models.values()):
+    for i, m in enumerate(res.res_models.values()):
         plt.figure(i + 1)
         plt.plot(res.timegrid.data['T'], m.average(), label=m.name)
         plt.xlabel('time (year)')
@@ -25,7 +25,7 @@ def plot_all_merge(res):
     plt.figure(1)
     plt.suptitle(res.result_name)
 
-    for i, m in enumerate(res.models.values()):
+    for i, m in enumerate(res.res_models.values()):
         plt.plot(res.timegrid.data['T'], m.average(), label=m.name)
 
     plt.xlabel('time (year)')

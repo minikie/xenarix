@@ -351,6 +351,10 @@ class ResultModel:
     #         return y
 
 
+    def export_csv(self, filename):
+        np.savetxt(filename, self.data, delimiter=",")
+
+
 class TimeSeriesResultModel:
     def __init__(self, timeseries, timegrid):
         self.timegrid = timegrid
@@ -370,7 +374,7 @@ class ResultObj:
         # self.process_names = None
         self.scenario_num = 0
         self.t_count = 0
-        self.models = OrderedDict()
+        self.res_models = OrderedDict()
         self.timegrid = None
         self.result_data_info = None
         self.initialize()
@@ -391,7 +395,7 @@ class ResultObj:
             # if debug 가 아니면 넣기...?
             rm = ResultModel(row, self.timegrid)
 
-            self.models[rm.name] = rm
+            self.res_models[rm.name] = rm
             #self.models[str.upper(key)] = rm
 
             # self.names.append(rm.name)
@@ -400,24 +404,24 @@ class ResultObj:
     def get_multipath(self, scen_count, type='namedtuple'):
         if type == 'namedtuple':
             data = {}
-            for m in self.models.values():
+            for m in self.res_models.values():
                 data[m.name] = m.data[scen_count]
             return pd.DataFrame.from_dict(data)
         else:
             res = []
 
-            for m in self.models.values():
+            for m in self.res_models.values():
                 res.append(m.data[scen_count])
 
             return np.array(res)
 
     # model_count = 0 to model_num - 1
     def get_modelpath(self, model_count=0):
-        return list(self.models.values())[model_count].data
+        return list(self.res_models.values())[model_count].data
 
     # model name
     def get_modelpath_by_name(self, model_name):
-        return self.models[model_name].data
+        return self.res_models[model_name].data
 
     # find ResultModel using key
     def get_resultModel(self, model, calc=None, shock='BASE'):
@@ -434,13 +438,30 @@ class ResultObj:
             calc_name = 'nan'
 
         key = result_model_key2(shock, model_name, calc_name)
-        return self.models[key]
+        return self.res_models[key]
 
     def get_resultModel_by_index(self, index):
-        return list(self.models.values())[index]
+        return list(self.res_models.values())[index]
 
     def get_resultModel_list(self):
-        return list(self.models.values())
+        return list(self.res_models.values())
+
+    def export_npz(self, filename):
+        npy_dict = dict()
+
+        # scen_info = np.array([(self.scenario_num, self.t_count)],
+        #                     dtype=[('scenario_num', 'i4'), ('t_coiunt', 'i4'), ('baz', 'S10')])
+
+        timegrid_arr = []
+        for t_row in self.timegrid:
+            timegrid_arr.append((t_row.INDEX, t_row.DATE, t_row.T, t_row.DT))
+
+        npy_dict['timegrid']= np.array(timegrid_arr,
+                                       dtype = [('INDEX', 'i4'), ('DATE', 'S10'), ('T', 'f4'), ('DT', 'f4')])
+
+        for model in self.res_models.values():
+            npy_dict[model.name] = model.data
+        np.savez(filename, **npy_dict)
 
 
 def xeResultLoad(result_obj, start_pos, end_pos):
