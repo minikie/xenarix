@@ -24,46 +24,15 @@ scen1.add_model(xen_s.gbmconst('kospi'))
 scen1.add_model(xen_s.hw1f('irskrw'))
 
 scenSet.add_scenario(scen1)
-# scenSet.generate()
+scenSet.generate()
 
 # get result from current repository
 res = xen_r.ResultObj(set_name, scen_id, result_id)
 
-for model in res.res_models.values():
-    print(model.name)
-
 # export csv
-# for i, model in enumerate(scen1.models):
-#     filename = model + '_' + str(i) + '.csv'
-#     res.get_resultModel_by_index(i).export_csv(filename)
+for i, model in enumerate(scen1.models):
+     filename = model + '_' + str(i) + '.csv'
+     res.get_resultModel_by_index(i).export_csv(filename)
 
+# export npz
 res.export_npz(scenSet.set_name + '.npz')
-
-#print(res.result_data_info)
-
-import numpy as np
-import pandas as pd
-
-arr = res.result_data_info.to_numpy()
-
-np.savez('test.npz', test=arr)
-test_d = np.load('test.npz')
-dd = test_d['test']
-
-for f in test_d:
-    print(f)
-
-
-
-#print('dtype : ' + str(arr.dtype))
-
-# for k in res.result_data_info:
-#     print(k)
-
-
-
-d = np.load(scenSet.set_name + '.npz')
-
-for k in d.keys():
-    print(k)
-

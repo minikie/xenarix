@@ -449,8 +449,36 @@ class ResultObj:
     def export_npz(self, filename):
         npy_dict = dict()
 
-        # scen_info = np.array([(self.scenario_num, self.t_count)],
-        #                     dtype=[('scenario_num', 'i4'), ('t_coiunt', 'i4'), ('baz', 'S10')])
+        res_data_source = self.result_data_info.to_numpy()
+        res_data_arr = []
+
+        for res_row in res_data_source:
+            res_data_arr.append(tuple(res_row))
+
+        npy_dict['result_info'] = np.array(res_data_arr, dtype=[
+                                ('REF_DT', 'S10'),
+                                ('RESULT_ID', 'S255'),
+                                ('RESULT_NM', 'S25'),
+                                ('SCENARIO_ID', 'S255'),
+                                ('SHOCK_NAME', 'S255'),
+                                ('SHOCK_SEQ', 'i4'),
+                                ('REF_INDEX_CD', 'S255'),
+                                ('MODEL_TYPE', 'S25'),
+                                ('CALCULATION', 'S25'),
+                                ('ORIGIN_CURRENCY', 'S10'),
+                                ('TARGET_CURRENCY', 'S10'),
+                                ('OUTPUT', 'S10'),
+                                ('CALC_TYPE', 'S10'),
+                                ('SCENARIO_NUM', 'i4'),
+                                ('T_COUNT', 'i4'),
+                                ('STEP_PER_YEAR', 'i4'),
+                                ('GEN_START_TIME', 'S12'),
+                                ('GEN_END_TIME', 'S12'),
+                                ('GEN_TYPE', 'i4'),
+                                ('STATUS_MESSAGE', 'S255'),
+                                ('STATUS', 'i4'),
+                                ('DESCRIPTION', 'S255'),
+                                ('FILEPATH', 'S255')])
 
         timegrid_arr = []
         for t_row in self.timegrid:
@@ -461,6 +489,7 @@ class ResultObj:
 
         for model in self.res_models.values():
             npy_dict[model.name] = model.data
+
         np.savez(filename, **npy_dict)
 
 
