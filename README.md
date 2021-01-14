@@ -9,11 +9,12 @@ Xenarix(Beta) : Economic Scenario Generator
 
 ## Notice
 
-<span style="color:orange;font-size: 24pt">This Xenarix is move to submodule of [MxDevTool](https://github.com/montrixdev/mxdevtool-python), Because of supporting financial math functions.</span>
+<span style="color:orange">This Xenarix is move to submodule of [MxDevTool](https://github.com/montrixdev/mxdevtool-python), Because of supporting financial math functions.</span>
 
----
+
 
 <br><br><br>
+---
 
 Xenarix is a economic scenario generator(ESG) for financial analysis. Now is Beta Release version.
 The Engine is developed by C++. 
