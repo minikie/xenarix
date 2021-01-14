@@ -9,7 +9,7 @@ Xenarix(Beta) : Economic Scenario Generator
 
 ## Notice
 
-**This Xenarix is moved to submodule of [MxDevTool](https://github.com/montrixdev/mxdevtool-python), Because of supporting financial math functions.**
+### **This Xenarix is moved to submodule of [MxDevTool](https://github.com/montrixdev/mxdevtool-python), Because of supporting financial math functions.**
 
 
 
